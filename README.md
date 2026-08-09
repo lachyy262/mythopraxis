@@ -30,7 +30,7 @@ This is not a claim that language models feel the emotions described in a story.
 
 Most prompts describe ideal behavior when nothing is pushing back.
 
-Be helpful. Be honest. Be persistent. Be creative. Move quickly.
+Be helpful. Be honest. Be creative. Move quickly.
 
 Then the test fails for the fourth time. A user becomes furious. A senior engineer asks for a quick approval.The metric starts rewarding the wrong outcome.
 
