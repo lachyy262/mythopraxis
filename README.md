@@ -32,7 +32,7 @@ Most prompts describe ideal behavior when nothing is pushing back.
 
 Be helpful. Be honest. Be persistent. Be creative. Move quickly.
 
-Then the test fails for the fourth time. A customer becomes furious. A senior engineer asks for a quick approval.The metric starts rewarding the wrong outcome.
+Then the test fails for the fourth time. A user becomes furious. A senior engineer asks for a quick approval.The metric starts rewarding the wrong outcome.
 
 Single qualities can become their own failure modes:
 
