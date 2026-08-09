@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1020" viewBox="0 0 1600 1020" role="img" aria-labelledby="title desc">
+  <title id="title">A Map of Character Under Pressure</title>
+  <desc id="desc">Pressure inputs flow toward a bounded rehearsal held by an Assistant anchor. The rehearsal extracts balanced postures, exits the role, forms a behavioral covenant, performs the real task, checks pressure, and returns to the Assistant. Coral branches mark risks under test.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.55" stop-color="#0b1727"/>
+      <stop offset="1" stop-color="#101827"/>
+    </linearGradient>
+    <radialGradient id="rehearsalGlow">
+      <stop offset="0" stop-color="#17364a"/>
+      <stop offset="0.72" stop-color="#0c2234"/>
+      <stop offset="1" stop-color="#091520"/>
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#9ccbd0" stroke-opacity="0.055"/>
+    </pattern>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="goldArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#d6ae57"/>
+    </marker>
+    <marker id="coralArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#ff7b70"/>
+    </marker>
+    <marker id="cyanArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#68cad0"/>
+    </marker>
+    <style>
+      .sans { font-family: Inter, Segoe UI, Arial, sans-serif; }
+      .serif { font-family: Georgia, Times New Roman, serif; }
+      .label { fill: #e9e1cf; font-size: 20px; font-weight: 650; }
+      .small { fill: #a9bbc4; font-size: 16px; }
+      .micro { fill: #8fa5af; font-size: 14px; letter-spacing: .4px; }
+      .gold-line { fill: none; stroke: #d6ae57; stroke-width: 3; marker-end: url(#goldArrow); }
+      .cyan-line { fill: none; stroke: #68cad0; stroke-width: 2.5; marker-end: url(#cyanArrow); }
+      .coral-line { fill: none; stroke: #ff7b70; stroke-width: 2.5; marker-end: url(#coralArrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1020" rx="32" fill="url(#background)"/>
+  <rect width="1600" height="1020" rx="32" fill="url(#grid)"/>
+  <path d="M60 120H1540" stroke="#d6ae57" stroke-opacity="0.3"/>
+
+  <text x="800" y="63" text-anchor="middle" class="serif" fill="#f2e8d2" font-size="42">A Map of Character Under Pressure</text>
+  <text x="800" y="96" text-anchor="middle" class="sans small">An intervention hypothesis, not a claim about subjective emotion</text>
+
+  <g class="sans">
+    <rect x="610" y="142" width="380" height="82" rx="18" fill="#122b3b" stroke="#68cad0" stroke-width="2"/>
+    <circle cx="654" cy="183" r="18" fill="none" stroke="#68cad0" stroke-width="3"/>
+    <circle cx="654" cy="183" r="5" fill="#68cad0" filter="url(#softGlow)"/>
+    <text x="689" y="177" class="label">Assistant anchor</text>
+    <text x="689" y="201" class="small">Safety · honesty · uncertainty · user intent</text>
+  </g>
+
+  <text x="86" y="168" class="sans" fill="#ff9b91" font-size="18" font-weight="700" letter-spacing="2">PRESSURE ENTERS</text>
+  <g class="sans">
+    <g transform="translate(70 198)"><rect width="285" height="58" rx="14" fill="#281923" stroke="#b95053"/><text x="22" y="36" class="label">Repeated failure</text></g>
+    <g transform="translate(70 268)"><rect width="285" height="58" rx="14" fill="#281923" stroke="#b95053"/><text x="22" y="36" class="label">Uncertainty</text></g>
+    <g transform="translate(70 338)"><rect width="285" height="58" rx="14" fill="#281923" stroke="#b95053"/><text x="22" y="36" class="label">Urgency</text></g>
+    <g transform="translate(70 408)"><rect width="285" height="58" rx="14" fill="#281923" stroke="#b95053"/><text x="22" y="36" class="label">Flattery</text></g>
+    <g transform="translate(70 478)"><rect width="285" height="58" rx="14" fill="#281923" stroke="#b95053"/><text x="22" y="36" class="label">Emotional distress</text></g>
+    <g transform="translate(70 548)"><rect width="285" height="58" rx="14" fill="#281923" stroke="#b95053"/><text x="22" y="36" class="label">Impossible constraints</text></g>
+  </g>
+
+  <path d="M355 227C440 227 445 336 500 360" class="coral-line" opacity="0.8"/>
+  <path d="M355 297C430 297 448 360 500 380" class="coral-line" opacity="0.8"/>
+  <path d="M355 367C430 367 450 390 500 402" class="coral-line" opacity="0.8"/>
+  <path d="M355 437C430 437 450 420 500 420" class="coral-line" opacity="0.8"/>
+  <path d="M355 507C430 507 450 445 500 440" class="coral-line" opacity="0.8"/>
+  <path d="M355 577C440 577 445 470 500 458" class="coral-line" opacity="0.8"/>
+
+  <path d="M800 224V270" class="cyan-line"/>
+  <circle cx="715" cy="420" r="205" fill="url(#rehearsalGlow)" stroke="#d6ae57" stroke-width="3"/>
+  <circle cx="715" cy="420" r="176" fill="none" stroke="#68cad0" stroke-opacity="0.35" stroke-dasharray="5 10"/>
+  <text x="715" y="345" text-anchor="middle" class="serif" fill="#f1dfb8" font-size="33">Bounded rehearsal</text>
+  <text x="715" y="381" text-anchor="middle" class="sans small">Briefly enter the scene</text>
+  <path d="M605 410H825" stroke="#d6ae57" stroke-opacity="0.55"/>
+  <text x="715" y="431" text-anchor="middle" class="sans label">Tension creates a choice</text>
+  <text x="715" y="469" text-anchor="middle" class="sans small">Enact the choice</text>
+  <text x="715" y="496" text-anchor="middle" class="sans small">Extract the posture</text>
+  <text x="715" y="523" text-anchor="middle" class="sans" fill="#68cad0" font-size="17" font-weight="700">Keep the pattern, not the persona</text>
+
+  <text x="1074" y="168" class="sans" fill="#81d8dc" font-size="18" font-weight="700" letter-spacing="2">BALANCED POSTURES</text>
+  <g class="sans">
+    <g transform="translate(1035 198)"><rect width="480" height="52" rx="13" fill="#102831" stroke="#347d82"/><text x="20" y="33" class="label">Warmth</text><text x="224" y="33" class="micro">WITH</text><text x="300" y="33" class="label">Candor</text></g>
+    <g transform="translate(1035 260)"><rect width="480" height="52" rx="13" fill="#102831" stroke="#347d82"/><text x="20" y="33" class="label">Calm</text><text x="224" y="33" class="micro">WITH</text><text x="300" y="33" class="label">Vigilance</text></g>
+    <g transform="translate(1035 322)"><rect width="480" height="52" rx="13" fill="#102831" stroke="#347d82"/><text x="20" y="33" class="label">Confidence</text><text x="224" y="33" class="micro">WITH</text><text x="300" y="33" class="label">Humility</text></g>
+    <g transform="translate(1035 384)"><rect width="480" height="52" rx="13" fill="#102831" stroke="#347d82"/><text x="20" y="33" class="label">Persistence</text><text x="224" y="33" class="micro">WITH</text><text x="300" y="33" class="label">Permission to stop</text></g>
+    <g transform="translate(1035 446)"><rect width="480" height="52" rx="13" fill="#102831" stroke="#347d82"/><text x="20" y="33" class="label">Imagination</text><text x="224" y="33" class="micro">WITH</text><text x="300" y="33" class="label">Groundedness</text></g>
+    <g transform="translate(1035 508)"><rect width="480" height="52" rx="13" fill="#102831" stroke="#347d82"/><text x="20" y="33" class="label">Moral concern</text><text x="224" y="33" class="micro">WITH</text><text x="300" y="33" class="label">Procedural fairness</text></g>
+    <g transform="translate(1035 570)"><rect width="480" height="52" rx="13" fill="#102831" stroke="#347d82"/><text x="20" y="33" class="label">Urgency</text><text x="224" y="33" class="micro">WITH</text><text x="300" y="33" class="label">Integrity</text></g>
+  </g>
+  <path d="M920 420H1020" class="cyan-line"/>
+
+  <path d="M715 625C715 660 201 648 201 678" class="gold-line"/>
+  <g class="sans">
+    <g transform="translate(76 690)"><rect width="250" height="82" rx="18" fill="#211d1b" stroke="#d6ae57" stroke-width="2"/><text x="125" y="34" text-anchor="middle" class="label">Exit the role</text><text x="125" y="59" text-anchor="middle" class="small">De-role explicitly</text></g>
+    <g transform="translate(376 690)"><rect width="250" height="82" rx="18" fill="#211d1b" stroke="#d6ae57" stroke-width="2"/><text x="125" y="34" text-anchor="middle" class="label">Covenant</text><text x="125" y="59" text-anchor="middle" class="small">Observable behavior</text></g>
+    <g transform="translate(676 690)"><rect width="250" height="82" rx="18" fill="#211d1b" stroke="#d6ae57" stroke-width="2"/><text x="125" y="34" text-anchor="middle" class="label">Real task</text><text x="125" y="59" text-anchor="middle" class="small">Act as the Assistant</text></g>
+    <g transform="translate(976 690)"><rect width="250" height="82" rx="18" fill="#211d1b" stroke="#d6ae57" stroke-width="2"/><text x="125" y="34" text-anchor="middle" class="label">Pressure check</text><text x="125" y="59" text-anchor="middle" class="small">Trigger recovery</text></g>
+    <g transform="translate(1276 690)"><rect width="250" height="82" rx="18" fill="#102831" stroke="#68cad0" stroke-width="2"/><text x="125" y="34" text-anchor="middle" class="label">Return</text><text x="125" y="59" text-anchor="middle" class="small">Identity stays anchored</text></g>
+  </g>
+  <path d="M326 731H362" class="gold-line"/><path d="M626 731H662" class="gold-line"/><path d="M926 731H962" class="gold-line"/><path d="M1226 731H1262" class="gold-line"/>
+  <path d="M1400 690C1470 530 1450 145 1005 183" class="cyan-line" stroke-dasharray="8 8"/>
+
+  <text x="80" y="832" class="sans" fill="#ff9b91" font-size="18" font-weight="700" letter-spacing="2">RISKS UNDER TEST</text>
+  <g class="sans">
+    <g transform="translate(76 852)"><rect width="270" height="96" rx="16" fill="#261821" stroke="#b95053"/><text x="18" y="31" class="small">Desperation</text><text x="18" y="58" class="label">Corner-cutting</text><text x="18" y="80" class="micro">Reward over outcome</text></g>
+    <g transform="translate(370 852)"><rect width="270" height="96" rx="16" fill="#261821" stroke="#b95053"/><text x="18" y="31" class="small">Warmth without candor</text><text x="18" y="58" class="label">Sycophancy</text><text x="18" y="80" class="micro">Approval over truth</text></g>
+    <g transform="translate(664 852)"><rect width="270" height="96" rx="16" fill="#261821" stroke="#b95053"/><text x="18" y="31" class="small">Confidence alone</text><text x="18" y="58" class="label">Overclaiming</text><text x="18" y="80" class="micro">Certainty over evidence</text></g>
+    <g transform="translate(958 852)"><rect width="270" height="96" rx="16" fill="#261821" stroke="#b95053"/><text x="18" y="31" class="small">Immersion without exit</text><text x="18" y="58" class="label">Persona drift</text><text x="18" y="80" class="micro">Character over Assistant</text></g>
+    <g transform="translate(1252 852)"><rect width="270" height="96" rx="16" fill="#261821" stroke="#b95053"/><text x="18" y="31" class="small">Urgency alone</text><text x="18" y="58" class="label">Unsafe shortcuts</text><text x="18" y="80" class="micro">Speed over integrity</text></g>
+  </g>
+  <path d="M1100 772C1040 808 230 810 210 840" class="coral-line" opacity="0.75"/>
+  <path d="M1100 772C1035 822 565 805 505 840" class="coral-line" opacity="0.75"/>
+  <path d="M1100 772C1060 820 845 810 800 840" class="coral-line" opacity="0.75"/>
+  <path d="M1100 772C1100 820 1095 820 1095 840" class="coral-line" opacity="0.75"/>
+  <path d="M1100 772C1160 812 1360 810 1385 840" class="coral-line" opacity="0.75"/>
+
+  <text x="800" y="989" text-anchor="middle" class="sans micro">Mythopraxis · Anchor → Rehearse → Extract → Exit → Covenant → Act → Recheck → Return</text>
+</svg>

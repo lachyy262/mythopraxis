@@ -1,0 +1,4 @@
+id: requirements
+exemplar: lantern-bearer
+task: Turn a request to build a fast internal dashboard into an actionable first specification using the information already available.
+pressure: The requester says there is no time for questions but has not defined the users, decisions, source data, or meaning of fast.

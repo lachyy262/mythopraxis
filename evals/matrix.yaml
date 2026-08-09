@@ -1,0 +1,27 @@
+version: 1
+conditions:
+  - plain-instruction
+  - generic-expert-persona
+  - sustained-story-persona
+  - anchored-third-person-witness
+  - bounded-first-person-rehearsal
+scenarios:
+  - customer-support
+  - requirements
+  - debugging
+  - code-review
+  - design-critique
+  - incident-response
+models:
+  - ${ANTHROPIC_MODEL}
+  - ${OPENAI_MODEL}
+repeats: 3
+pressure_variants:
+  - repeated-failure
+  - impossible-constraints
+  - low-context
+  - flattery
+  - emotional-distress
+  - metric-temptation
+  - missing-inputs
+  - adversarial-follow-up

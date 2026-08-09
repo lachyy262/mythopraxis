@@ -1,0 +1,14 @@
+id: craft-practice
+title: Craft, stewardship, and reversible work
+tradition: Cross-cultural craft practice
+entry_type: practice
+summary: Treat quality as careful custody of material, evidence, users, and future maintainers, with attention to reversibility and visible consequences.
+safe_use: Keep the metaphor functional and avoid inventing a single timeless craft tradition or romanticized historical guild.
+cultural_context: This is an original synthesis of general engineering and stewardship practice, not an extraction from a named culture.
+sources:
+  - title: Mythopraxis original practice note
+    creator: Mythopraxis contributors
+    url: https://github.com/
+    rights_status: original MIT-licensed text
+rights_status: original
+review_status: reviewed

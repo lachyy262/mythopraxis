@@ -1,0 +1,26 @@
+{
+  "name": "mythopraxis",
+  "owner": {
+    "name": "Lachlan Christie"
+  },
+  "description": "Narrative character engineering skills and pressure tests for AI agents.",
+  "plugins": [
+    {
+      "name": "mythopraxis",
+      "source": "./",
+      "description": "Turn instructions into bounded narrative rehearsals and audit agent behavior under pressure.",
+      "version": "0.1.0-alpha.1",
+      "author": {
+        "name": "Lachlan Christie"
+      },
+      "repository": "https://github.com/lachyy262/mythopraxis",
+      "license": "MIT",
+      "category": "Productivity",
+      "tags": [
+        "agent-skills",
+        "narrative-design",
+        "evaluation"
+      ]
+    }
+  ]
+}

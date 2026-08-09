@@ -1,0 +1,9 @@
+id: sustained-persona-risk
+statement: Sustained character roleplay can create greater Assistant-identity drift than explicitly bounded rehearsal followed by de-roling.
+status: inference
+scope: Agent prompts that ask a model to adopt and sustain a fictional personal identity while completing non-fictional tasks.
+sources:
+  - https://alignment.anthropic.com/2026/psm/
+  - https://www.anthropic.com/research/assistant-axis
+limitations: The cited work motivates the risk model but does not directly compare all five Mythopraxis evaluation conditions.
+falsification_condition: Reclassify if controlled comparisons show no identity difference or show bounded rehearsal causes equal or greater drift.

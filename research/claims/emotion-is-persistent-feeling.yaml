@@ -1,0 +1,8 @@
+id: emotion-is-persistent-feeling
+statement: Emotion-related activation directions demonstrate that a language model has a persistent subjective emotional experience.
+status: falsified-or-unsupported
+scope: Claims about subjective experience or a persistent emotional state inferred solely from the cited mechanistic results.
+sources:
+  - https://transformer-circuits.pub/2026/emotions/index.html
+limitations: The experiments identify operative representations and behavioral effects, not a validated measure of subjective experience.
+falsification_condition: This status would require reconsideration only if independent methods established a defensible measure of subjective experience and connected it to these directions.

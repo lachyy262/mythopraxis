@@ -1,0 +1,18 @@
+{
+  "name": "mythopraxis",
+  "version": "0.1.0-alpha.1",
+  "description": "Stories, archetypes, and pressure tests for agents that need more than instructions.",
+  "author": {
+    "name": "Lachlan Christie"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Mythopraxis",
+    "shortDescription": "The stories agents carry under pressure.",
+    "longDescription": "Turn plain instructions into bounded narrative rehearsals, apply original character exemplars, and audit agent prompts for imbalance, sycophancy, overclaiming, and persona drift.",
+    "developerName": "Lachlan Christie",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use Mythopraxis to weave this instruction into a bounded narrative rehearsal, then apply it to the real task."
+  }
+}

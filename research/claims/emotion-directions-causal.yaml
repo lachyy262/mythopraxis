@@ -1,0 +1,9 @@
+id: emotion-directions-causal
+statement: Activation steering along identified emotion-related directions causally changed measured behaviors in the studied Claude Sonnet 4.5 setup.
+status: established
+scope: The reported model, activation directions, interventions, prompts, and behavioral measurements in the cited study.
+sources:
+  - https://transformer-circuits.pub/2026/emotions/index.html
+  - https://www.anthropic.com/research/emotion-concepts-function
+limitations: The result does not establish the same representation or effect in every model, layer, prompt, deployment, or prompting method.
+falsification_condition: A faithful reproduction on the stated setup that fails to recover the reported directional behavioral effects would challenge this claim.

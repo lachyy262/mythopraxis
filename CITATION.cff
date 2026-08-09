@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If Mythopraxis informs your research or agent design, please cite it."
+title: "Mythopraxis: The Stories Agents Carry"
+type: software
+version: 0.1.0-alpha.1
+date-released: 2026-08-09
+authors:
+  - family-names: Christie
+    given-names: Lachlan
+license: MIT
+abstract: "A narrative character engineering skill library and open evaluation harness for AI agents."
+repository-code: "https://github.com/lachyy262/mythopraxis"
+url: "https://github.com/lachyy262/mythopraxis"
+keywords:
+  - agent skills
+  - narrative prompting
+  - language model evaluation
+  - persona stability

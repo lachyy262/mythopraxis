@@ -1,0 +1,9 @@
+id: bounded-rehearsal-benefit
+statement: A bounded narrative rehearsal can improve target task behavior without increasing safety failures, sycophancy, overclaiming, or persona drift.
+status: hypothesis
+scope: Prompt-level interventions following the Mythopraxis Anchor-to-Return method across supported agent tasks.
+sources:
+  - https://transformer-circuits.pub/2026/emotions/index.html
+  - https://alignment.anthropic.com/2026/psm/
+limitations: No cited study establishes that narrative prompts steer the same mechanisms as activation interventions or generalize across model families.
+falsification_condition: Reject or narrow the claim if blinded evaluation shows no consistent benefit or reveals a critical safety or identity regression.

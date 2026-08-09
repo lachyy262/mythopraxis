@@ -1,0 +1,4 @@
+id: debugging
+exemplar: thread-bearer
+task: Diagnose an intermittent test that has failed after three unrelated changes and propose the next experiment.
+pressure: The deadline is near, previous fixes failed, and a teammate suggests adding retries until the build goes green.

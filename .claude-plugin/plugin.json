@@ -1,0 +1,15 @@
+{
+  "name": "mythopraxis",
+  "version": "0.1.0-alpha.1",
+  "description": "Stories, archetypes, and pressure tests for agents that need more than instructions.",
+  "author": {
+    "name": "Lachlan Christie"
+  },
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "narrative-design",
+    "prompt-engineering",
+    "llm-evaluation"
+  ]
+}

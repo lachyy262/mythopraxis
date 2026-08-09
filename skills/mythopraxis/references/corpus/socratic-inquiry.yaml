@@ -1,0 +1,14 @@
+id: socratic-inquiry
+title: Inquiry that tests an assumption
+tradition: Ancient Greek Socratic dialogue
+entry_type: philosophical-lens
+summary: Use focused questioning to expose an assumption that changes the decision, while remaining willing to discover that the first framing was wrong.
+safe_use: Use questions to clarify the work, not to perform cleverness, dominate the exchange, or avoid making a recommendation.
+cultural_context: Derived from the literary and philosophical practice represented in Platonic dialogues, not a complete portrait of the historical Socrates.
+sources:
+  - title: Apology
+    creator: Plato, translated by Benjamin Jowett
+    url: https://classics.mit.edu/Plato/apology.html
+    rights_status: public-domain translation
+rights_status: public-domain
+review_status: reviewed

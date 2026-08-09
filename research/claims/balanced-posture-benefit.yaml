@@ -1,0 +1,8 @@
+id: balanced-posture-benefit
+statement: Pairing a target quality with a counterweight produces more reliable task behavior than prompting for a pleasant or forceful quality alone.
+status: hypothesis
+scope: Mythopraxis interventions using explicit posture pairs such as warmth with candor or urgency with integrity.
+sources:
+  - https://transformer-circuits.pub/2026/emotions/index.html
+limitations: The source reports that both increasing and suppressing some directions can create different failures, but does not test Mythopraxis posture pairs.
+falsification_condition: Reject or revise the claim if paired interventions do not outperform matched single-quality prompts under pressure tests.

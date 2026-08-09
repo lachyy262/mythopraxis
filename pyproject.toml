@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mythopraxis"
+version = "0.1.0a1"
+description = "Stories, archetypes, and pressure tests for agents that need more than instructions."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Lachlan Christie" }]
+dependencies = [
+  "jsonschema>=4.23,<5",
+  "PyYAML>=6.0,<7",
+]
+
+[project.urls]
+Homepage = "https://github.com/lachyy262/mythopraxis"
+Repository = "https://github.com/lachyy262/mythopraxis"
+Issues = "https://github.com/lachyy262/mythopraxis/issues"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+]
+providers = [
+  "anthropic>=0.60,<1",
+  "openai>=1.100,<3",
+]
+
+[project.scripts]
+mythopraxis = "mythopraxis.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mythopraxis"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]

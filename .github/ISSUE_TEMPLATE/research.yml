@@ -1,0 +1,29 @@
+name: Research claim or evaluation proposal
+description: Propose a claim, source, pressure case, or evaluation improvement.
+title: "[Research]: "
+labels: [research]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Research question
+      description: State a falsifiable question rather than a desired conclusion.
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Current evidence status
+      options:
+        - Established within a cited scope
+        - Inference
+        - Hypothesis
+        - Falsified or unsupported
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources and limitations
+    validations:
+      required: true

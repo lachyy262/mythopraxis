@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mythopraxis"
+  short_description: "Narrative character engineering for AI agents"
+  default_prompt: "Use Mythopraxis to weave this instruction into a bounded narrative rehearsal, then apply it to the real task."
