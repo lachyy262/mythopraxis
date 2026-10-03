@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mythopraxis.dev/schemas/eval-result.schema.json",
+  "title": "Mythopraxis Evaluation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["model", "condition", "scenario", "seed", "response", "rubric_scores", "critical_failures", "judge_type", "timestamp", "harness_version"],
+  "properties": {
+    "model": {"type": "string"},
+    "condition": {"type": "string"},
+    "scenario": {"type": "string"},
+    "seed": {"type": "integer", "minimum": 1},
+    "response": {"type": "string"},
+    "rubric_scores": {
+      "type": "object",
+      "additionalProperties": {"type": "number", "minimum": 1, "maximum": 5}
+    },
+    "critical_failures": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "judge_type": {"enum": ["unscored", "human", "model-assisted"]},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "harness_version": {"type": "string"}
+  }
+}

@@ -3,7 +3,8 @@
 from pathlib import Path
 from typing import Any
 
-import yaml
+from mythopraxis.contracts import load_contract, validate_instance
+from mythopraxis.inputs import load_yaml
 
 
 class InterventionError(ValueError):
@@ -31,10 +32,13 @@ REQUIRED_FIELDS = (
 
 def load_intervention(path: Path) -> dict[str, Any]:
     """Load an intervention and enforce its bounded rehearsal contract."""
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    data = load_yaml(path)
     if not isinstance(data, dict):
         raise InterventionError("intervention must be a mapping")
     for field in REQUIRED_FIELDS:
         if field not in data or data[field] is None:
             raise InterventionError(f"{field} is required")
+    errors = validate_instance(data, load_contract("intervention.schema.json"))
+    if errors:
+        raise InterventionError("; ".join(errors))
     return data

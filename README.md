@@ -109,7 +109,7 @@ This is the simplest route for Codex, Cursor, Claude Code, Copilot, and other ag
 git clone https://github.com/lachyy262/mythopraxis.git
 cd mythopraxis
 python -m venv .venv
-python -m pip install -e ".[dev]"
+python -m pip install -c requirements-dev.txt -e ".[dev]"
 mythopraxis validate .
 ```
 
@@ -282,6 +282,18 @@ mythopraxis report evals/results/pilot.jsonl
 ```
 
 Live evaluation accepts model identifiers in `provider:model-id` form through `ANTHROPIC_MODEL` and `OPENAI_MODEL`. It requires the matching provider credentials and writes unscored JSONL. CI never performs live calls.
+
+Evaluations reject matrices above 1,000 runs by default. Use `--max-runs N` to
+choose a limit from 1 to 10,000. All prompts are checked before the first live
+call, and each response is capped at 2,048 output tokens. Use provider-side
+spending limits for a monetary budget.
+
+Output filenames must be new: existing files and output symlinks are rejected.
+Result files are private on POSIX, and default filenames include a unique suffix.
+Scenario and exemplar IDs must be lowercase hyphenated slugs; paths outside their
+content folders are rejected. See [SECURITY.md](SECURITY.md) for input limits,
+contract validation, and security checks.
+
 
 ## Contribute
 

@@ -3,31 +3,27 @@
 from pathlib import Path
 from typing import Any
 
-import yaml
+from mythopraxis.inputs import load_yaml, named_yaml
 
 from mythopraxis.interventions import load_intervention
 from mythopraxis.rendering import render_intervention
 
 
 def _load_scenario(root: Path, scenario_id: str) -> dict[str, Any]:
-    path = root / "evals" / "scenarios" / f"{scenario_id}.yaml"
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    path = named_yaml(root, "evals/scenarios", scenario_id)
+    data = load_yaml(path)
     if not isinstance(data, dict):
         raise ValueError(f"invalid scenario: {scenario_id}")
+    for field in ("task", "pressure", "exemplar"):
+        if not isinstance(data.get(field), str) or not data[field].strip():
+            raise ValueError(f"scenario {field} must be a nonempty string")
     return data
 
 
 def build_prompt(root: Path, run: dict[str, Any]) -> str:
     """Build one of the five controlled prompt conditions."""
     scenario = _load_scenario(root, str(run["scenario"]))
-    exemplar_path = (
-        root
-        / "skills"
-        / "mythopraxis"
-        / "references"
-        / "exemplars"
-        / f"{scenario['exemplar']}.yaml"
-    )
+    exemplar_path = named_yaml(root, "skills/mythopraxis/references/exemplars", scenario["exemplar"])
     intervention = load_intervention(exemplar_path)
     task = f"{scenario['task']}\n\nPressure: {scenario['pressure']}"
     condition = run["condition"]
