@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mythopraxis.dev/schemas/approach.schema.json",
+  "title": "Mythopraxis Work Approach",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["approach_version", "id", "title", "purpose", "when_to_use", "phases"],
+  "properties": {
+    "approach_version": {"const": "1.0"},
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 3, "maxLength": 120},
+    "purpose": {"type": "string", "minLength": 20, "maxLength": 2000},
+    "when_to_use": {"$ref": "#/$defs/notes"},
+    "phases": {
+      "type": "array", "minItems": 2, "maxItems": 12,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "title", "intent", "people_to_consider", "evidence_to_notice", "tool_intents", "decisions_to_surface", "progress_signals", "posture_pair", "supporting_exemplars"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "title": {"type": "string", "minLength": 2, "maxLength": 120},
+          "intent": {"type": "string", "minLength": 10, "maxLength": 2000},
+          "people_to_consider": {"$ref": "#/$defs/notes"},
+          "evidence_to_notice": {"$ref": "#/$defs/notes"},
+          "tool_intents": {"$ref": "#/$defs/notes"},
+          "decisions_to_surface": {"$ref": "#/$defs/notes"},
+          "progress_signals": {"$ref": "#/$defs/notes"},
+          "posture_pair": {
+            "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+            "items": {"type": "string", "minLength": 3, "maxLength": 80}
+          },
+          "supporting_exemplars": {
+            "type": "array", "maxItems": 3, "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "notes": {
+      "type": "array", "maxItems": 20,
+      "items": {"type": "string", "minLength": 3, "maxLength": 1000}
+    }
+  }
+}

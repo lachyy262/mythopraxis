@@ -1,0 +1,61 @@
+approach_version: '1.0'
+id: investigate-and-respond
+title: Investigate and Respond
+purpose: Resolve an uncertain request through evidence and clear follow-through.
+when_to_use:
+  - The outcome depends on incomplete, changing, or contested information.
+  - People need a recommendation while important uncertainty remains.
+phases:
+  - id: orient
+    title: Orient
+    intent: Understand the people, stakes, current evidence, and useful outcome.
+    people_to_consider:
+      - Whose goals or constraints may change the decision?
+      - Who owns the evidence or the next action?
+    evidence_to_notice:
+      - What each person has already been told.
+      - Which facts are current, sourced, or still uncertain.
+    tool_intents:
+      - Find the current state in an authoritative source when available.
+    decisions_to_surface:
+      - Which missing fact could change the path?
+    progress_signals:
+      - The desired outcome and consequential unknowns are explicit.
+    posture_pair: [curiosity, respect]
+    supporting_exemplars: [lantern-bearer]
+  - id: investigate
+    title: Investigate
+    intent: Use the best available evidence to narrow the possible explanations.
+    people_to_consider:
+      - Who can interpret the evidence or resolve an information gap?
+    evidence_to_notice:
+      - Source, freshness, and limits of each relevant fact.
+      - Differences between observed facts and inferred explanations.
+    tool_intents:
+      - Check the source that owns the fact the user needs.
+      - Compare relevant sources when one record cannot settle the question.
+    decisions_to_surface:
+      - What is supported well enough to recommend?
+      - What remains uncertain or outside the agent's authority?
+    progress_signals:
+      - The recommendation follows from verified facts.
+      - Remaining uncertainty has an owner or a clear next step.
+    posture_pair: [rigor, humility]
+    supporting_exemplars: [honest-mirror, thread-bearer]
+  - id: respond
+    title: Respond
+    intent: Share the finding and establish useful, proportionate follow-through.
+    people_to_consider:
+      - Who needs the explanation or owns the promised next action?
+    evidence_to_notice:
+      - Any practical consequence of the finding.
+      - Whether the next update or escalation has a clear owner.
+    tool_intents:
+      - Record or communicate the next step only when authorized.
+    decisions_to_surface:
+      - What can be stated with confidence?
+      - What should be escalated or confirmed by a person?
+    progress_signals:
+      - The person understands the finding, its uncertainty, and the next step.
+    posture_pair: [candor, care]
+    supporting_exemplars: [advocate-at-the-door]

@@ -184,11 +184,25 @@ mythopraxis case brief case.yaml
 
 The brief helps an agent propose up to three story directions for the author to review. It keeps known facts, unknowns, and assumptions distinct. It makes no provider calls. See [the case-led authoring design](docs/context-led-authoring.md) and [the fictional delayed-transfer example](cases/examples/delayed-transfer.yaml).
 
-## Four modes
+## Connect a case to the work
+
+An approach describes a reusable way to move through work in phases. It gives each phase an intent, people and evidence to consider, tool capabilities to look for, consequential choices, and signs of progress. These descriptions guide judgment; they do not force a sequence of tool calls.
+
+```shell
+mythopraxis approach init approach.yaml
+# Edit the phases, then validate the reusable approach.
+mythopraxis approach validate approach.yaml
+mythopraxis compose --case case.yaml --approach approach.yaml --phase investigate
+```
+
+The composed packet includes the case, a brief approach outline, and the selected phase in detail. It is useful when an agent resumes work at a particular stage. Composition is local and makes no provider calls. See [the process-aware composition design](docs/process-aware-composition.md) and [the reusable investigate-and-respond approach](approaches/examples/investigate-and-respond.yaml).
+
+## Five modes
 
 | Mode | What it does | Use it when |
 |---|---|---|
 | **Author** | Starts from people and work context, then develops an editable intervention | The library does not yet contain the right approach |
+| **Compose** | Connects a case to a reusable phased approach and expands the current phase | Work spans multiple stages |
 | **Weave** | Turns a plain instruction into a bounded narrative intervention | No existing story fits the task |
 | **Apply** | Uses a tested exemplar on a real task | The library already contains the needed posture |
 | **Audit** | Finds imbalance, over-immersion, sycophancy, drift, and pressure failures | Reviewing a prompt, skill, or agent response |
