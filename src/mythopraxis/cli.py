@@ -8,6 +8,7 @@ from typing import Sequence
 
 from uuid import uuid4
 
+from mythopraxis.cases import authoring_brief, initialize_case, load_case
 from mythopraxis.inputs import DEFAULT_MAX_RUNS, load_yaml
 
 from mythopraxis.evaluations import expand_matrix
@@ -39,6 +40,15 @@ def _parser() -> argparse.ArgumentParser:
 
     report = subparsers.add_parser("report", help="render a Markdown results report")
     report.add_argument("results")
+
+    case = subparsers.add_parser("case", help="create and validate context for authoring")
+    case_commands = case.add_subparsers(dest="case_command", required=True)
+    case_init = case_commands.add_parser("init", help="write a private starter case")
+    case_init.add_argument("path")
+    case_validate = case_commands.add_parser("validate", help="validate case context")
+    case_validate.add_argument("path")
+    case_brief = case_commands.add_parser("brief", help="export an agent authoring brief")
+    case_brief.add_argument("path")
     return parser
 
 
@@ -75,6 +85,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if args.command == "report":
         print(render_report(Path(args.results)), end="")
+        return 0
+    if args.command == "case":
+        path = Path(args.path).expanduser()
+        if args.case_command == "init":
+            try:
+                initialize_case(path)
+            except FileExistsError:
+                print(f"ERROR: refusing to overwrite existing case: {path}")
+                return 1
+            print(f"Created private case template: {path}")
+            return 0
+        try:
+            case = load_case(path)
+        except (OSError, ValueError) as error:
+            print(f"ERROR: {error}")
+            return 1
+        if args.case_command == "validate":
+            print(f"Case valid: {case['id']}")
+            return 0
+        print(authoring_brief(case), end="")
         return 0
     return 2
 

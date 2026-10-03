@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mythopraxis.dev/schemas/case.schema.json",
+  "title": "Mythopraxis Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_version", "id", "purpose", "people", "relationships", "work", "context", "pressures", "success", "boundaries"],
+  "properties": {
+    "case_version": {"const": "1.0"},
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "purpose": {"type": "string", "minLength": 20, "maxLength": 2000},
+    "people": {
+      "type": "array", "minItems": 1, "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "role", "situation", "goals", "stakes", "expertise", "needs_preferences", "constraints"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "role": {"type": "string", "minLength": 2, "maxLength": 120},
+          "situation": {"type": "string", "minLength": 10, "maxLength": 2000},
+          "goals": {"$ref": "#/$defs/personNotes"},
+          "stakes": {"$ref": "#/$defs/personNotes"},
+          "expertise": {"type": "string", "minLength": 5, "maxLength": 1000},
+          "needs_preferences": {"$ref": "#/$defs/personNotes"},
+          "constraints": {"$ref": "#/$defs/notes"}
+        }
+      }
+    },
+    "relationships": {
+      "type": "array", "maxItems": 12,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["people", "dynamic", "accountability"],
+        "properties": {
+          "people": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+          "dynamic": {"type": "string", "minLength": 10, "maxLength": 1000},
+          "accountability": {"type": "string", "minLength": 10, "maxLength": 1000}
+        }
+      }
+    },
+    "work": {
+      "type": "object", "additionalProperties": false,
+      "required": ["outcome", "stage", "process", "tools"],
+      "properties": {
+        "outcome": {"type": "string", "minLength": 10, "maxLength": 2000},
+        "stage": {"type": "string", "minLength": 5, "maxLength": 1000},
+        "process": {"$ref": "#/$defs/notes"},
+        "tools": {
+          "type": "array", "maxItems": 12,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["name", "use", "limits"],
+            "properties": {
+              "name": {"type": "string", "minLength": 2, "maxLength": 120},
+              "use": {"type": "string", "minLength": 5, "maxLength": 1000},
+              "limits": {"type": "string", "minLength": 5, "maxLength": 1000}
+            }
+          }
+        }
+      }
+    },
+    "context": {
+      "type": "object", "additionalProperties": false,
+      "required": ["known", "unknown", "assumptions"],
+      "properties": {
+        "known": {"$ref": "#/$defs/notes"},
+        "unknown": {"$ref": "#/$defs/notes"},
+        "assumptions": {"$ref": "#/$defs/notes"}
+      }
+    },
+    "pressures": {"$ref": "#/$defs/notes"},
+    "success": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observable", "avoid"],
+      "properties": {
+        "observable": {"$ref": "#/$defs/notes"},
+        "avoid": {"$ref": "#/$defs/notes"}
+      }
+    },
+    "boundaries": {"$ref": "#/$defs/notes"}
+  },
+  "$defs": {
+    "personNotes": {
+      "type": "array", "minItems": 1, "maxItems": 12,
+      "items": {"type": "string", "minLength": 3, "maxLength": 1000}
+    },
+    "notes": {
+      "type": "array", "maxItems": 20,
+      "items": {"type": "string", "minLength": 3, "maxLength": 1000}
+    }
+  }
+}
