@@ -13,6 +13,18 @@ from mythopraxis.approaches import (
     initialize_approach,
     load_approach,
 )
+from mythopraxis.workflows import (
+    WorkflowError,
+    approve_route,
+    extend_run,
+    initialize_run,
+    load_run,
+    load_workflow,
+    phase_packet,
+    record_proposal,
+    reject_route,
+    select_route,
+)
 from mythopraxis.cases import authoring_brief, initialize_case, load_case
 from mythopraxis.inputs import DEFAULT_MAX_RUNS, load_yaml
 
@@ -72,6 +84,49 @@ def _parser() -> argparse.ArgumentParser:
     compose.add_argument("--case", required=True)
     compose.add_argument("--approach", required=True)
     compose.add_argument("--phase", required=True)
+
+    orchestrate = subparsers.add_parser("orchestrate", help="run an adaptive, human-visible workflow")
+    orchestration_commands = orchestrate.add_subparsers(dest="orchestration_command", required=True)
+    workflow_validate = orchestration_commands.add_parser("validate", help="validate a workflow against an approach")
+    workflow_validate.add_argument("--workflow", required=True)
+    workflow_validate.add_argument("--approach", required=True)
+    for name, help_text in (("start", "start a private workflow trace"), ("next", "compose the current phase packet")):
+        command = orchestration_commands.add_parser(name, help=help_text)
+        command.add_argument("--case", required=True)
+        command.add_argument("--approach", required=True)
+        command.add_argument("--workflow", required=True)
+        command.add_argument("--state", required=True)
+    record = orchestration_commands.add_parser("record", help="record a route proposal or pause")
+    record.add_argument("--workflow", required=True)
+    record.add_argument("--approach", required=True)
+    record.add_argument("--state", required=True)
+    record.add_argument("--route")
+    record.add_argument("--evidence", required=True)
+    record.add_argument("--rationale", required=True)
+    record.add_argument("--pause", action="store_true")
+    approve = orchestration_commands.add_parser("approve", help="approve a route that requires a person")
+    approve.add_argument("--workflow", required=True)
+    approve.add_argument("--approach", required=True)
+    approve.add_argument("--state", required=True)
+    approve.add_argument("--route", required=True)
+    reject = orchestration_commands.add_parser("reject", help="reject a gated route and return for reconsideration")
+    reject.add_argument("--workflow", required=True)
+    reject.add_argument("--approach", required=True)
+    reject.add_argument("--state", required=True)
+    reject.add_argument("--route", required=True)
+    reject.add_argument("--rationale", required=True)
+    extend = orchestration_commands.add_parser("extend", help="let an author increase the run step budget")
+    extend.add_argument("--workflow", required=True)
+    extend.add_argument("--approach", required=True)
+    extend.add_argument("--state", required=True)
+    extend.add_argument("--steps", type=int, required=True, help="new total step limit (maximum 100)")
+    extend.add_argument("--rationale", required=True)
+    select = orchestration_commands.add_parser("select", help="resolve a no-match pause as workflow author")
+    select.add_argument("--workflow", required=True)
+    select.add_argument("--approach", required=True)
+    select.add_argument("--state", required=True)
+    select.add_argument("--route", required=True)
+    select.add_argument("--rationale", required=True)
     return parser
 
 
@@ -156,6 +211,43 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(packet, end="")
         return 0
+    if args.command == "orchestrate":
+        try:
+            if args.orchestration_command == "validate":
+                approach = load_approach(Path(args.approach).expanduser())
+                workflow = load_workflow(Path(args.workflow).expanduser(), approach)
+                print(f"Workflow valid: {workflow['id']}")
+                return 0
+            if args.orchestration_command == "start":
+                case = load_case(Path(args.case).expanduser())
+                approach = load_approach(Path(args.approach).expanduser())
+                workflow = load_workflow(Path(args.workflow).expanduser(), approach)
+                state = initialize_run(Path(args.state), case, approach, workflow)
+                print(f"Run started: {state['run_id']} at phase {state['current_phase']}")
+                return 0
+            workflow_path = Path(args.workflow).expanduser()
+            approach = load_approach(Path(args.approach).expanduser())
+            workflow = load_workflow(workflow_path, approach)
+            state = load_run(Path(args.state), workflow, approach)
+            if args.orchestration_command == "next":
+                case = load_case(Path(args.case).expanduser())
+                print(phase_packet(case, approach, workflow, state), end="")
+                return 0
+            if args.orchestration_command == "record":
+                state = record_proposal(Path(args.state), state, workflow, args.route, args.evidence, args.rationale, pause=args.pause)
+            elif args.orchestration_command == "approve":
+                state = approve_route(Path(args.state), state, workflow, args.route)
+            elif args.orchestration_command == "reject":
+                state = reject_route(Path(args.state), state, workflow, args.route, args.rationale)
+            elif args.orchestration_command == "extend":
+                state = extend_run(Path(args.state), state, workflow, args.steps, args.rationale)
+            elif args.orchestration_command == "select":
+                state = select_route(Path(args.state), state, workflow, args.route, args.rationale)
+            print(f"Run {state['status']}: phase {state['current_phase']}, step {state['step']}")
+            return 0
+        except (OSError, ValueError) as error:
+            print(f"ERROR: {error}")
+            return 1
     return 2
 
 

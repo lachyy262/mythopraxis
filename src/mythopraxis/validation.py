@@ -10,11 +10,12 @@ from mythopraxis.cases import load_case
 from mythopraxis.contracts import load_contract, validate_instance
 from mythopraxis.inputs import content_path, load_yaml, read_text
 from mythopraxis.interventions import load_intervention
+from mythopraxis.workflows import load_workflow
 
 REQUIRED_SCHEMA_FILES = {
     "intervention.schema.json", "library-entry.schema.json",
     "claim.schema.json", "eval-result.schema.json", "case.schema.json",
-    "approach.schema.json",
+    "approach.schema.json", "workflow.schema.json", "workflow-state.schema.json",
 }
 
 
@@ -114,12 +115,14 @@ def validate_repository(root: Path) -> list[str]:
                 errors.append(f"{relative}: {error}")
     except (OSError, ValueError) as error:
         errors.append(f"cases/examples: {error}")
+    approach_examples = {}
     try:
         examples = content_path(root, Path("approaches/examples"))
         for path in sorted(examples.glob("*.yaml")):
             relative = path.relative_to(root)
             try:
                 approach = load_approach(content_path(root, relative))
+                approach_examples[approach["id"]] = content_path(root, relative)
                 errors.extend(
                     f"{relative}: {issue}"
                     for issue in validate_instance(
@@ -136,6 +139,27 @@ def validate_repository(root: Path) -> list[str]:
                 errors.append(f"{relative}: {error}")
     except (OSError, ValueError) as error:
         errors.append(f"approaches/examples: {error}")
+    try:
+        examples = content_path(root, Path("workflows/examples"))
+        for path in sorted(examples.glob("*.yaml")):
+            relative = path.relative_to(root)
+            try:
+                workflow = load_yaml(content_path(root, relative))
+                if not isinstance(workflow, dict):
+                    errors.append(f"{relative}: workflow must be a mapping")
+                    continue
+                if workflow.get("approach_id") not in approach_examples:
+                    errors.append(f"{relative}: unknown approach {workflow.get('approach_id')}")
+                    continue
+                errors.extend(
+                    f"{relative}: {issue}"
+                    for issue in validate_instance(workflow, contracts["workflow.schema.json"])
+                )
+                load_workflow(content_path(root, relative), load_approach(approach_examples[workflow["approach_id"]]))
+            except (OSError, ValueError) as error:
+                errors.append(f"{relative}: {error}")
+    except (OSError, ValueError) as error:
+        errors.append(f"workflows/examples: {error}")
     try:
         readme = content_path(root, Path("README.md"))
         if "\u2014" in read_text(readme):

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mythopraxis.dev/schemas/workflow-state.schema.json",
+  "title": "Mythopraxis Private Workflow State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["state_version", "run_id", "case_id", "approach_id", "approach_digest", "workflow_id", "workflow_digest", "current_phase", "status", "step", "step_limit", "pending_route", "events"],
+  "properties": {
+    "state_version": {"const": "1.0"},
+    "run_id": {"type": "string", "pattern": "^[a-f0-9]{32}$"},
+    "case_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "approach_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "approach_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "workflow_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "workflow_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "current_phase": {"type": "string", "pattern": "^(?:[a-z0-9]+(?:-[a-z0-9]+)*|complete)$"},
+    "status": {"enum": ["active", "awaiting_author", "awaiting_approval", "complete"]},
+    "step": {"type": "integer", "minimum": 0, "maximum": 100},
+    "step_limit": {"type": "integer", "minimum": 1, "maximum": 100},
+    "pending_route": {"type": ["string", "null"], "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "events": {
+      "type": "array", "maxItems": 200,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["at", "kind", "from_phase", "route_id", "evidence", "rationale"],
+        "properties": {
+          "at": {"type": "string", "format": "date-time"},
+          "kind": {"enum": ["route_proposal", "author_pause", "human_approval", "human_rejection", "author_selection", "author_extension"]},
+          "from_phase": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "route_id": {"type": ["string", "null"], "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "evidence": {"type": ["string", "null"], "maxLength": 2000},
+          "rationale": {"type": ["string", "null"], "maxLength": 2000}
+        }
+      }
+    }
+  }
+}

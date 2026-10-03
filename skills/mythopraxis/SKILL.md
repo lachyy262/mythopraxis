@@ -57,7 +57,15 @@ Use a reusable approach to connect the case to how the work unfolds over time.
 5. Compose the case with the current phase using `mythopraxis compose --case <case> --approach <approach> --phase <phase-id>`. The packet expands the selected phase and keeps the remaining phases as a short outline.
 6. Use the phase as a lens for judgment, not a mandatory script. Choose tools only when useful and authorized. State evidence and uncertainty so the next phase can continue coherently.
 
-Composition makes no provider calls and does not invoke tools. If the approach needs branches, explicit approvals, or resumable run history, use the orchestration format when available.
+Composition makes no provider calls and does not invoke tools. If the approach needs branches, explicit approvals, or resumable run history, use adaptive orchestration:
+
+1. Author a workflow that names its approach, start phase, evidence-based route conditions, approval gates, no-match pause, and step limit. Validate it with `mythopraxis orchestrate validate --workflow <workflow> --approach <approach>`.
+2. Start a local trace with `mythopraxis orchestrate start --case <case> --approach <approach> --workflow <workflow> --state <private-state-file>`.
+3. Read each phase packet with `mythopraxis orchestrate next`. Use actual case evidence to propose one available route, or pause if none fits. Record concise evidence and rationale with `orchestrate record`.
+4. Stop at `awaiting_approval` until a person explicitly approves or rejects the route. A rejection returns the current phase for reconsideration. When paused for an author, ask them to resolve the missing context or choose a route with a rationale. Do not infer approval from the route condition.
+5. Treat the local state file as private: it stores decision notes, not case contents. Keep sensitive details out of notes unless needed. Mythopraxis does not call tools or models to choose routes.
+
+See [adaptive orchestration](../../docs/adaptive-orchestration.md) and the [evidence-led response example](../../workflows/examples/evidence-led-response.yaml).
 
 ## Weave
 
