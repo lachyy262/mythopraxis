@@ -13,7 +13,7 @@ def call_provider(model: str, prompt: str, seed: int) -> str:
             from openai import OpenAI
         except ImportError as error:
             raise RuntimeError("install mythopraxis[providers] to run OpenAI evaluations") from error
-        response = OpenAI().responses.create(model=model_id, input=prompt)
+        response = OpenAI().responses.create(model=model_id, input=prompt, max_output_tokens=2048)
         return response.output_text
     if provider == "anthropic":
         try:

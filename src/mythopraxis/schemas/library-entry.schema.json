@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mythopraxis.dev/schemas/library-entry.schema.json",
+  "title": "Mythopraxis Library Entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "tradition", "entry_type", "summary", "safe_use", "cultural_context", "sources", "rights_status", "review_status"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "title": {"type": "string"},
+    "tradition": {"type": "string"},
+    "entry_type": {"enum": ["philosophical-lens", "narrative-pattern", "practice", "source-note"]},
+    "summary": {"type": "string", "minLength": 40},
+    "safe_use": {"type": "string", "minLength": 20},
+    "cultural_context": {"type": "string", "minLength": 20},
+    "sources": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["title", "creator", "url", "rights_status"],
+        "properties": {
+          "title": {"type": "string"},
+          "creator": {"type": "string"},
+          "url": {"type": "string", "format": "uri"},
+          "rights_status": {"type": "string"}
+        }
+      }
+    },
+    "rights_status": {"enum": ["original", "public-domain", "cc0", "cc-by", "quotation", "restricted-context"]},
+    "review_status": {"enum": ["reviewed", "needs-context-review", "excluded"]}
+  }
+}

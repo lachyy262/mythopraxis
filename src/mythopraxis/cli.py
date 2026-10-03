@@ -6,7 +6,9 @@ from functools import partial
 from pathlib import Path
 from typing import Sequence
 
-import yaml
+from uuid import uuid4
+
+from mythopraxis.inputs import DEFAULT_MAX_RUNS, load_yaml
 
 from mythopraxis.evaluations import expand_matrix
 from mythopraxis.interventions import load_intervention
@@ -33,6 +35,7 @@ def _parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--matrix", required=True)
     evaluate.add_argument("--dry-run", action="store_true")
     evaluate.add_argument("--output")
+    evaluate.add_argument("--max-runs", type=int, default=DEFAULT_MAX_RUNS, help="maximum permitted runs (1-10000; default 1000)")
 
     report = subparsers.add_parser("report", help="render a Markdown results report")
     report.add_argument("results")
@@ -56,8 +59,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if args.command == "eval":
         matrix_path = Path(args.matrix).resolve()
-        matrix = yaml.safe_load(matrix_path.read_text(encoding="utf-8"))
-        runs = expand_matrix(matrix)
+        matrix = load_yaml(matrix_path)
+        runs = expand_matrix(matrix, max_runs=args.max_runs)
         if args.dry_run:
             print(f"Expanded {len(runs)} runs. No provider calls were made.")
             return 0
@@ -66,8 +69,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             run["model"] = resolved_models[matrix["models"].index(run["model"])]
         root = matrix_path.parent.parent
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        output = Path(args.output).resolve() if args.output else root / "evals" / "results" / f"pilot-{stamp}.jsonl"
-        count = run_evaluations(runs, partial(build_prompt, root), call_provider, output)
+        output = Path(args.output).absolute() if args.output else root / "evals" / "results" / f"pilot-{stamp}-{uuid4().hex}.jsonl"
+        count = run_evaluations(runs, partial(build_prompt, root), call_provider, output, max_runs=args.max_runs)
         print(f"Wrote {count} unscored runs to {output}")
         return 0
     if args.command == "report":

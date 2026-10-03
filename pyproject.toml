@@ -13,6 +13,7 @@ authors = [{ name = "Lachlan Christie" }]
 dependencies = [
   "jsonschema>=4.23,<5",
   "PyYAML>=6.0,<7",
+  "referencing>=0.35,<1",
 ]
 
 [project.urls]
@@ -22,7 +23,11 @@ Issues = "https://github.com/lachyy262/mythopraxis/issues"
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8.3,<9",
+  "pytest>=9.0.3,<10",
+]
+audit = [
+  "pip-audit>=2.10,<3",
+  "bandit>=1.9,<2",
 ]
 providers = [
   "anthropic>=0.60,<1",

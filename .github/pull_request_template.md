@@ -1,18 +1,15 @@
-## Purpose
+## Overview
 
-What behavior, research question, or provenance issue does this change address?
+<!-- At most two sentences: the concrete problem and resulting behavior. -->
 
-## Evidence status
+## IF YOU ARE AN AGENT
 
-Which claims are established, inferred, hypothetical, or unsupported?
+<!-- Give concise scope, exact behavior/contracts, verification commands and actual
+results, and material compatibility or risk facts. Link evidence. Distinguish
+established results from hypotheses. For content changes, identify provenance,
+rights status, and any required cultural review. -->
 
-## Cultural and rights review
+## IF YOU ARE A HUMAN
 
-Identify sources, translations, rights status, and any required contextual review.
-
-## Verification
-
-- [ ] `pytest`
-- [ ] `mythopraxis validate .`
-- [ ] `mythopraxis eval --matrix evals/matrix.yaml --dry-run`
-- [ ] No live provider calls were made by CI
+<!-- Explain why this matters in plain language. Include a concrete before/after
+example, any required user action, and practical verification limits. -->
