@@ -30,7 +30,7 @@ audit = [
   "bandit>=1.9,<2",
 ]
 providers = [
-  "anthropic>=0.60,<1",
+  "anthropic>=0.60,<2",
   "openai>=1.100,<3",
 ]
 
