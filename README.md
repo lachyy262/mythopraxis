@@ -169,10 +169,26 @@ The output of a rehearsal is not a new identity. It is a compact behavioral cove
 - Recommend clearly, then name uncertainty.
 - Move quickly without hiding risk or bypassing safeguards.
 
-## Three modes
+## Start with the situation
+
+When no existing exemplar quite fits, describe the situation before you write the story. A case captures who is involved, what each person needs and is responsible for, the work process and tools, known facts and open questions, pressures, success signals, and boundaries. This lets the authoring agent build an intervention around the actual choice the work requires instead of making the agent roleplay a person.
+
+Create and validate a private case file, then export an authoring prompt:
+
+```shell
+mythopraxis case init case.yaml
+# Edit case.yaml with the relevant situation and people.
+mythopraxis case validate case.yaml
+mythopraxis case brief case.yaml
+```
+
+The brief helps an agent propose up to three story directions for the author to review. It keeps known facts, unknowns, and assumptions distinct. It makes no provider calls. See [the case-led authoring design](docs/context-led-authoring.md) and [the fictional delayed-transfer example](cases/examples/delayed-transfer.yaml).
+
+## Four modes
 
 | Mode | What it does | Use it when |
 |---|---|---|
+| **Author** | Starts from people and work context, then develops an editable intervention | The library does not yet contain the right approach |
 | **Weave** | Turns a plain instruction into a bounded narrative intervention | No existing story fits the task |
 | **Apply** | Uses a tested exemplar on a real task | The library already contains the needed posture |
 | **Audit** | Finds imbalance, over-immersion, sycophancy, drift, and pressure failures | Reviewing a prompt, skill, or agent response |

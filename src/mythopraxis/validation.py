@@ -6,12 +6,13 @@ from typing import Any
 from urllib.parse import unquote
 
 from mythopraxis.contracts import load_contract, validate_instance
+from mythopraxis.cases import load_case
 from mythopraxis.inputs import content_path, load_yaml, read_text
 from mythopraxis.interventions import load_intervention
 
 REQUIRED_SCHEMA_FILES = {
     "intervention.schema.json", "library-entry.schema.json",
-    "claim.schema.json", "eval-result.schema.json",
+    "claim.schema.json", "eval-result.schema.json", "case.schema.json",
 }
 
 
@@ -97,6 +98,20 @@ def validate_repository(root: Path) -> list[str]:
         for claim in document["claims"]:
             if claim not in ids["claim.schema.json"]:
                 errors.append(f"{path}: unknown claim {claim}")
+    try:
+        examples = content_path(root, Path("cases/examples"))
+        for path in sorted(examples.glob("*.yaml")):
+            relative = path.relative_to(root)
+            try:
+                case = load_case(content_path(root, relative))
+                errors.extend(
+                    f"{relative}: {issue}"
+                    for issue in validate_instance(case, contracts["case.schema.json"])
+                )
+            except (OSError, ValueError) as error:
+                errors.append(f"{relative}: {error}")
+    except (OSError, ValueError) as error:
+        errors.append(f"cases/examples: {error}")
     try:
         readme = content_path(root, Path("README.md"))
         if "\u2014" in read_text(readme):

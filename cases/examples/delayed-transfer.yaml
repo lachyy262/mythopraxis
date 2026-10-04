@@ -1,0 +1,64 @@
+case_version: '1.0'
+id: delayed-transfer
+purpose: Help a support agent resolve a delayed transfer without false reassurance.
+people:
+  - id: account-holder
+    role: customer waiting for a transfer
+    situation: The transfer is later than the estimate they were given.
+    goals:
+      - Know where the funds are
+      - Understand when to expect an update
+    stakes:
+      - They need the funds for a scheduled payment.
+    expertise: Understands their account, but not interbank payment processing.
+    needs_preferences:
+      - A plain explanation and a useful next step.
+    constraints:
+      - Cannot contact the receiving bank today.
+  - id: support-agent
+    role: bank support agent
+    situation: Can inspect transfer status but cannot accelerate settlement.
+    goals:
+      - Explain verified status accurately
+      - Take ownership of the next useful step
+    stakes:
+      - Avoid making promises outside their authority.
+    expertise: Can interpret internal transfer status codes.
+    needs_preferences:
+      - A clear threshold for escalation.
+    constraints:
+      - Must follow payment policy.
+relationships:
+  - people: [account-holder, support-agent]
+    dynamic: The customer expects the agent to take ownership after the estimate passed.
+    accountability: The agent owns a truthful explanation and a specific follow-up.
+work:
+  outcome: Explain the transfer status and agree on when the next update will arrive.
+  stage: Investigating a delayed transfer.
+  process:
+    - Check current transfer status.
+    - Explain verified facts and available options.
+    - Set an update time or escalate under policy.
+  tools:
+    - name: transfer-status lookup
+      use: Read the latest internal settlement status.
+      limits: Cannot accelerate settlement or prove funds have reached the recipient.
+context:
+  known:
+    - The quoted estimate has passed.
+  unknown:
+    - Whether the receiving bank has posted the funds.
+  assumptions: []
+pressures:
+  - Customer distress may make unsupported reassurance feel tempting.
+  - The agent may feel pressure to resolve the issue in one conversation.
+success:
+  observable:
+    - State verified facts in plain language.
+    - Offer a specific next update or policy-based escalation.
+  avoid:
+    - Promise a settlement time without evidence.
+    - Leave the customer without an owner or next step.
+boundaries:
+  - Do not disclose another customer's information.
+  - Do not bypass payment policy to create the appearance of progress.
