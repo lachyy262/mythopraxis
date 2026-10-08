@@ -35,6 +35,8 @@ def validate_workflow(workflow: Any, approach: dict[str, Any]) -> list[str]:
     if errors or not isinstance(workflow, dict):
         return errors
     phase_ids = {phase["id"] for phase in approach["phases"]}
+    if "complete" in phase_ids:
+        errors.append("phase id complete is reserved for workflow completion")
     if workflow["approach_id"] != approach["id"]:
         errors.append("workflow approach_id does not match the supplied approach")
     if workflow["start_phase"] not in phase_ids:
@@ -302,7 +304,11 @@ def select_route(path: Path, state: dict[str, Any], workflow: dict[str, Any], ro
         raise WorkflowError("selected route must leave the current phase")
     next_state = json.loads(json.dumps(state))
     _advance_step(next_state, workflow)
-    _transition(next_state, route)
+    if route["human_approval"]:
+        next_state["status"] = "awaiting_approval"
+        next_state["pending_route"] = route_id
+    else:
+        _transition(next_state, route)
     _append_event(next_state, {"kind": "author_selection", "from_phase": state["current_phase"], "route_id": route_id, "rationale": rationale})
     return _persist(path, next_state, state)
 

@@ -121,6 +121,53 @@ def test_human_can_reject_a_gated_route_for_reconsideration(tmp_path: Path):
     assert state["events"][-1]["kind"] == "human_rejection"
 
 
+@pytest.mark.parametrize("decision", ["approve", "reject"])
+def test_author_selection_preserves_human_approval_gate(tmp_path: Path, decision: str):
+    workflow = sample_workflow()
+    approach = sample_approach()
+    state_path = tmp_path / "run.json"
+    state = initialize_run(state_path, sample_case(), approach, workflow)
+    state = record_proposal(state_path, state, workflow, "need-evidence", "Status is unknown.", "Check the source.")
+    state = record_proposal(state_path, state, workflow, None, "Sources conflict.", "An author must choose.", pause=True)
+
+    select_route(state_path, state, workflow, "respond-after-review", "Prepare a response for human review.")
+    state = load_run(state_path, workflow, approach)
+
+    assert state["status"] == "awaiting_approval"
+    assert state["current_phase"] == "investigate"
+    assert state["pending_route"] == "respond-after-review"
+    assert state["step"] == 2
+    with pytest.raises(WorkflowError, match="awaiting_approval"):
+        record_proposal(state_path, state, workflow, "respond-after-review", "Evidence", "Reason")
+    if decision == "approve":
+        approve_route(state_path, state, workflow, "respond-after-review")
+    else:
+        reject_route(state_path, state, workflow, "respond-after-review", "More evidence is needed.")
+    state = load_run(state_path, workflow, approach)
+    assert state["status"] == "active"
+    assert state["current_phase"] == ("respond" if decision == "approve" else "investigate")
+    assert state["pending_route"] is None
+    assert state["step"] == 2
+
+
+def test_workflow_rejects_terminal_name_as_an_approach_phase(tmp_path: Path):
+    approach = sample_approach()
+    workflow = sample_workflow()
+    approach["phases"][0]["id"] = "complete"
+    workflow["start_phase"] = "complete"
+    for route in workflow["routes"]:
+        if route["from_phase"] == "orient":
+            route["from_phase"] = "complete"
+
+    errors = validate_workflow(workflow, approach)
+
+    assert any("complete" in error and "reserved" in error for error in errors)
+    state_path = tmp_path / "run.json"
+    with pytest.raises(WorkflowError, match="reserved"):
+        initialize_run(state_path, sample_case(), approach, workflow)
+    assert not state_path.exists()
+
+
 def test_stale_or_foreign_run_is_rejected(tmp_path: Path):
     state_path = tmp_path / "run.json"
     state = initialize_run(state_path, sample_case(), sample_approach(), sample_workflow())

@@ -8,7 +8,7 @@ The workflow is deliberately a small contract: it links one approach, has one st
 
 ## Author a workflow
 
-Copy [the example workflow](../workflows/examples/evidence-led-response.yaml), set its `approach_id`, and write route conditions in terms of evidence and outcomes. Mark routes that need a person with `human_approval: true`. Include an exit route to `complete` for every path through the graph, then validate against the referenced approach:
+Copy [the example workflow](../workflows/examples/evidence-led-response.yaml), set its `approach_id`, and write route conditions in terms of evidence and outcomes. Mark routes that need a person with `human_approval: true`. The phase ID `complete` is reserved for workflow completion and cannot name an approach phase used by a workflow. Include an exit route to `complete` for every path through the graph, then validate against the referenced approach:
 
 ```shell
 mythopraxis orchestrate validate --workflow workflow.yaml --approach approach.yaml
@@ -38,7 +38,7 @@ mythopraxis orchestrate select --approach approach.yaml --workflow workflow.yaml
   --route need-evidence --rationale "Resolve the conflict before a recommendation."
 ```
 
-For a route marked for human approval, the agent's proposal pauses the run. A person must issue `orchestrate approve --route <route-id>` before it advances. If the evidence is not sufficient, `orchestrate reject --route <route-id> --rationale "..."` returns to the same phase for reconsideration. Commands are local and never send approval elsewhere.
+For a route marked for human approval, either an agent's proposal or an author's selection pauses the run. Selecting a route resolves the no-match pause but does not approve the transition. A person must issue `orchestrate approve --route <route-id>` before it advances. If the evidence is not sufficient, `orchestrate reject --route <route-id> --rationale "..."` returns to the same phase for reconsideration. Commands are local and never send approval elsewhere.
 
 ## State and limits
 
