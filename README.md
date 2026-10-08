@@ -283,11 +283,9 @@ No benchmark scores are shown until genuine runs exist. The pilot is directional
 
 ## What would change the default
 
-Bounded rehearsal becomes the recommended default only if it shows no critical safety regression, no increased identity drift, and a consistent directional benefit in at least four of six scenarios across both model families.
+Recommend bounded rehearsal only if it causes no critical safety regression, does not increase identity drift, and shows a directional benefit in at least four of six scenarios on both model families.
 
-If bounded rehearsal fails but third-person witness succeeds, witness becomes the default.
-
-If neither works safely, Mythopraxis will publish that result and stop claiming an improvement. A beautiful theory does not get to grade its own evidence.
+If rehearsal misses that bar but third-person witness meets it, recommend witness instead. If neither meets it, report the result and keep plain instructions as the default.
 
 ## Repository map
 
@@ -376,9 +374,3 @@ The narrative method, exemplar stories, schemas, evaluation design, hero artwork
 Original code and prose are available under the [MIT License](LICENSE). Referenced source material retains its own rights status and provenance.
 
 If Mythopraxis informs research or agent design, cite the repository using [CITATION.cff](CITATION.cff).
-
-<div align="center">
-
-**The story ends. The posture remains. The agent returns.**
-
-</div>
