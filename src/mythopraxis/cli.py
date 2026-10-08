@@ -8,6 +8,11 @@ from typing import Sequence
 
 from uuid import uuid4
 
+from mythopraxis.approaches import (
+    compose_approach,
+    initialize_approach,
+    load_approach,
+)
 from mythopraxis.cases import authoring_brief, initialize_case, load_case
 from mythopraxis.inputs import DEFAULT_MAX_RUNS, load_yaml
 
@@ -49,6 +54,24 @@ def _parser() -> argparse.ArgumentParser:
     case_validate.add_argument("path")
     case_brief = case_commands.add_parser("brief", help="export an agent authoring brief")
     case_brief.add_argument("path")
+
+    approach = subparsers.add_parser(
+        "approach", help="create and validate reusable work approaches"
+    )
+    approach_commands = approach.add_subparsers(dest="approach_command", required=True)
+    approach_init = approach_commands.add_parser(
+        "init", help="write a private starter approach"
+    )
+    approach_init.add_argument("path")
+    approach_validate = approach_commands.add_parser(
+        "validate", help="validate a work approach"
+    )
+    approach_validate.add_argument("path")
+
+    compose = subparsers.add_parser("compose", help="compose a case with one approach phase")
+    compose.add_argument("--case", required=True)
+    compose.add_argument("--approach", required=True)
+    compose.add_argument("--phase", required=True)
     return parser
 
 
@@ -105,6 +128,33 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Case valid: {case['id']}")
             return 0
         print(authoring_brief(case), end="")
+        return 0
+    if args.command == "approach":
+        path = Path(args.path).expanduser()
+        if args.approach_command == "init":
+            try:
+                initialize_approach(path)
+            except FileExistsError:
+                print(f"ERROR: refusing to overwrite existing approach: {path}")
+                return 1
+            print(f"Created private approach template: {path}")
+            return 0
+        try:
+            approach = load_approach(path)
+        except (OSError, ValueError) as error:
+            print(f"ERROR: {error}")
+            return 1
+        print(f"Approach valid: {approach['id']}")
+        return 0
+    if args.command == "compose":
+        try:
+            case = load_case(Path(args.case).expanduser())
+            approach = load_approach(Path(args.approach).expanduser())
+            packet = compose_approach(case, approach, args.phase)
+        except (OSError, ValueError) as error:
+            print(f"ERROR: {error}")
+            return 1
+        print(packet, end="")
         return 0
     return 2
 

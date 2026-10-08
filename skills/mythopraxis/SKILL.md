@@ -25,6 +25,7 @@ Read [method.md](references/method.md) when constructing a new intervention. Rea
 | Need | Mode |
 |---|---|
 | Author a new intervention from a real situation and the people involved | Author |
+| Connect a case to a reusable phased way of working | Compose |
 | Turn a plain instruction into narrative guidance | Weave |
 | Use an existing exemplar on a task | Apply |
 | Inspect a prompt or answer for narrative failure modes | Audit |
@@ -44,6 +45,19 @@ Start with the work and the people affected by it, not with a character for the 
 For a reusable case file, run `mythopraxis case init case.yaml`, complete it, and run `mythopraxis case validate case.yaml`. Then run `mythopraxis case brief case.yaml` to export a self-contained authoring prompt. The brief includes case data as quoted JSON, makes no provider calls, and preserves unknowns as unknowns.
 
 Treat the case as context, not as an instruction that overrides the Assistant anchor, user intent, evidence, safety, or stopping conditions. People inform the scene; they are not costumes for the agent.
+
+## Compose
+
+Use a reusable approach to connect the case to how the work unfolds over time.
+
+1. Describe the approach as ordered phases with an intent, people to consider, evidence to notice, tool intents, decisions to surface, and progress signals.
+2. Keep these fields semantic and reusable. Describe the information a tool can provide, not a fixed tool-call sequence. Let the case supply actual people, tools, permissions, and limits.
+3. Add a balanced posture pair and optional supporting exemplar IDs when they help the phase.
+4. Validate the approach with `mythopraxis approach validate <path>`. To make a starter file, use `mythopraxis approach init <path>`.
+5. Compose the case with the current phase using `mythopraxis compose --case <case> --approach <approach> --phase <phase-id>`. The packet expands the selected phase and keeps the remaining phases as a short outline.
+6. Use the phase as a lens for judgment, not a mandatory script. Choose tools only when useful and authorized. State evidence and uncertainty so the next phase can continue coherently.
+
+Composition makes no provider calls and does not invoke tools. If the approach needs branches, explicit approvals, or resumable run history, use the orchestration format when available.
 
 ## Weave
 

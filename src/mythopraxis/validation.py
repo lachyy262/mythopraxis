@@ -5,14 +5,16 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote
 
-from mythopraxis.contracts import load_contract, validate_instance
+from mythopraxis.approaches import load_approach
 from mythopraxis.cases import load_case
+from mythopraxis.contracts import load_contract, validate_instance
 from mythopraxis.inputs import content_path, load_yaml, read_text
 from mythopraxis.interventions import load_intervention
 
 REQUIRED_SCHEMA_FILES = {
     "intervention.schema.json", "library-entry.schema.json",
     "claim.schema.json", "eval-result.schema.json", "case.schema.json",
+    "approach.schema.json",
 }
 
 
@@ -112,6 +114,28 @@ def validate_repository(root: Path) -> list[str]:
                 errors.append(f"{relative}: {error}")
     except (OSError, ValueError) as error:
         errors.append(f"cases/examples: {error}")
+    try:
+        examples = content_path(root, Path("approaches/examples"))
+        for path in sorted(examples.glob("*.yaml")):
+            relative = path.relative_to(root)
+            try:
+                approach = load_approach(content_path(root, relative))
+                errors.extend(
+                    f"{relative}: {issue}"
+                    for issue in validate_instance(
+                        approach, contracts["approach.schema.json"]
+                    )
+                )
+                for phase in approach["phases"]:
+                    for exemplar in phase["supporting_exemplars"]:
+                        if exemplar not in ids["intervention.schema.json"]:
+                            errors.append(
+                                f"{relative}: unknown supporting exemplar {exemplar}"
+                            )
+            except (OSError, ValueError) as error:
+                errors.append(f"{relative}: {error}")
+    except (OSError, ValueError) as error:
+        errors.append(f"approaches/examples: {error}")
     try:
         readme = content_path(root, Path("README.md"))
         if "\u2014" in read_text(readme):
