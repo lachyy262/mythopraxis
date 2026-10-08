@@ -1,0 +1,28 @@
+workflow_version: '1.0'
+id: evidence-led-response
+title: Evidence-led response
+approach_id: investigate-and-respond
+start_phase: orient
+max_steps: 12
+no_match: pause-for-author
+routes:
+  - id: need-evidence
+    from_phase: orient
+    to_phase: investigate
+    when: A consequential fact remains unverified.
+    human_approval: false
+  - id: ready-to-respond
+    from_phase: orient
+    to_phase: respond
+    when: The available evidence already supports a safe response.
+    human_approval: false
+  - id: respond-after-review
+    from_phase: investigate
+    to_phase: respond
+    when: The evidence supports a bounded response.
+    human_approval: true
+  - id: finish
+    from_phase: respond
+    to_phase: complete
+    when: The person has a clear outcome and owner for follow-through.
+    human_approval: false

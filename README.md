@@ -197,12 +197,25 @@ mythopraxis compose --case case.yaml --approach approach.yaml --phase investigat
 
 The composed packet includes the case, a brief approach outline, and the selected phase in detail. It is useful when an agent resumes work at a particular stage. Composition is local and makes no provider calls. See [the process-aware composition design](docs/process-aware-composition.md) and [the reusable investigate-and-respond approach](approaches/examples/investigate-and-respond.yaml).
 
+## Let the work change direction
+
+A workflow connects approach phases through evidence-led route conditions. It can offer several next phases, pause when none fits, and require a person to approve consequential handoffs. The agent proposes a route and records the evidence and reasoning; Mythopraxis does not choose a route or call tools for it.
+
+```shell
+mythopraxis orchestrate validate --workflow workflow.yaml --approach approach.yaml
+mythopraxis orchestrate start --case case.yaml --approach approach.yaml --workflow workflow.yaml --state run.json
+mythopraxis orchestrate next --case case.yaml --approach approach.yaml --workflow workflow.yaml --state run.json
+```
+
+Then record a route with `orchestrate record`, or pause for an author when no route fits. Runs that hit an approval gate wait for an explicit `orchestrate approve`; a person can reject the route and return it for reconsideration. The private local state file tracks phase and short decision notes. See [adaptive orchestration](docs/adaptive-orchestration.md) and [the example workflow](workflows/examples/evidence-led-response.yaml).
+
 ## Five modes
 
 | Mode | What it does | Use it when |
 |---|---|---|
 | **Author** | Starts from people and work context, then develops an editable intervention | The library does not yet contain the right approach |
 | **Compose** | Connects a case to a reusable phased approach and expands the current phase | Work spans multiple stages |
+| **Orchestrate** | Connects phases with adaptive routes, pauses, approvals, and a private decision trace | The best next phase depends on evidence |
 | **Weave** | Turns a plain instruction into a bounded narrative intervention | No existing story fits the task |
 | **Apply** | Uses a tested exemplar on a real task | The library already contains the needed posture |
 | **Audit** | Finds imbalance, over-immersion, sycophancy, drift, and pressure failures | Reviewing a prompt, skill, or agent response |
