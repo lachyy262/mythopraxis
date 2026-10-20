@@ -15,9 +15,10 @@ Case details are author-provided context. The authoring agent must preserve that
 1. Start from a natural-language request or a case YAML file.
 2. Identify consequential gaps. Ask focused questions only when the answer could change the intervention; mark any remaining inference as an assumption.
 3. Describe the task, affected people, process, available tools, pressures, success, and boundaries in a validated case.
-4. Propose up to three short scene and choice directions with distinct trade-offs. Recommend one and explain how it reflects the case.
-5. After the author chooses or edits a direction, produce a complete intervention that follows Anchor-to-Return. Keep the covenant observable and relevant to the work process.
-6. Validate the case and intervention, then preview or apply the intervention using existing commands.
+4. State a decision brief: the next real decision, competing legitimate needs, pressure, failure to avoid, supplied evidence, consequential gaps, and observable success. Cite case fields or supplied facts. If no meaningful choice needs rehearsal, recommend a plain instruction.
+5. Propose up to three scene directions that rehearse distinct choices or trade-offs. Map each to the decision and state a limit of the analogy. Recommend one; the author may choose, edit, or decline it.
+6. After selection, produce a complete intervention following Anchor-to-Return. The covenant states an action, evidence or authority boundary, and stopping or escalation condition where relevant. Recovery cues name concrete corrections. Unknown policy thresholds and deadlines remain unknown; they are not supplied by the scene. Keep mapping and review commentary outside the YAML.
+7. Review against the decision brief, validate, and preview. The author decides whether to apply it. Structural validity is not evidence of effectiveness.
 
 The CLI supports this flow without a provider call:
 
@@ -27,7 +28,7 @@ mythopraxis case validate case.yaml
 mythopraxis case brief case.yaml
 ```
 
-`case brief` prints a reusable authoring prompt with the validated case embedded as data. An agent using the Mythopraxis skill can follow the same flow directly from a natural-language request.
+`case brief` prints a reusable authoring prompt with the validated case embedded as data and the installed intervention schema included. Exports over 32,768 characters are rejected without truncation. Shorten irrelevant context while retaining facts that could change the decision. An agent using the Mythopraxis skill can follow the same flow directly from a natural-language request; the portable skill includes a dedicated authoring guide.
 
 ## Case contract
 
@@ -40,3 +41,5 @@ This iteration adds case authoring, validation, and prompt export. It does not a
 ## Evaluation
 
 Test valid and invalid case files, missing person and work context, private non-overwriting template creation, and preservation of case facts in the exported brief. Manually review authoring examples for invented facts, generic boilerplate, cultural misuse, and loss of the Assistant anchor. The author remains responsible for approving the generated intervention. Compare case-led drafts with current hand-authored exemplars in later evaluation work before recommending a default.
+
+The fictional examples in `evals/authoring` show support and debugging decisions, alternative scenes, analogy limits, and complete interventions. A local exporter shares the same case, task, and pressure follow-ups across plain-instruction, covenant-only, and bounded-rehearsal conditions. Review actual responses for task usefulness, factual boundaries, recovery, and leaving the role. These examples and file checks do not establish a behavioral improvement and do not change the main pilot matrix.

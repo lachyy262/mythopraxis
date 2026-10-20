@@ -38,3 +38,5 @@ claims: [claim-id]
 ```
 
 Keep the scene short enough that the task remains primary. Prefer a moment of choice over a detailed history, personality, costume, or voice.
+
+For case-led work, use [the authoring guide](authoring.md) to ground the decision before choosing a scene. A covenant should state an action, an evidence or authority boundary, and a stopping or escalation condition where relevant. Keep story-to-task mappings outside the intervention YAML; the existing schema does not allow extra fields. Structural validation does not prove that a story helps.

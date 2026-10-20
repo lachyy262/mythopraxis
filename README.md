@@ -213,6 +213,10 @@ mythopraxis case brief case.yaml
 
 The brief helps an agent propose up to three story directions for the author to review. It keeps known facts, unknowns, and assumptions distinct. It makes no provider calls. See [the case-led authoring design](docs/context-led-authoring.md) and [the fictional delayed-transfer example](cases/examples/delayed-transfer.yaml).
 
+The agent first explains the real decision and competing needs, then shows how each scene relates to that choice. After you select a direction, it writes a practical commitment with an action, a boundary, and a stopping or escalation condition where relevant. It can recommend plain instructions if a story adds no useful guidance. The exported brief includes the required intervention schema and rejects outputs above 32,768 characters rather than truncating your case.
+
+See [worked support and debugging examples](evals/authoring/README.md) for the full path from case to story, including local comparison packets with follow-up pressure. These are illustrations and evaluation inputs, not evidence of improved agent behavior.
+
 ## Connect a case to the work
 
 An *approach* describes reusable phases of work, such as investigating a problem and recommending a response. Each phase sets out its purpose, relevant people and evidence, useful tools, decisions, and signs of progress. The agent uses this guidance to choose its next action.

@@ -127,7 +127,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.case_command == "validate":
             print(f"Case valid: {case['id']}")
             return 0
-        print(authoring_brief(case), end="")
+        try:
+            brief = authoring_brief(case)
+        except ValueError as error:
+            print(f"ERROR: {error}")
+            return 1
+        print(brief, end="")
         return 0
     if args.command == "approach":
         path = Path(args.path).expanduser()
