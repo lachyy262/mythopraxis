@@ -172,3 +172,14 @@ def test_case_cli_init_writes_template(tmp_path: Path, capsys) -> None:
     assert "people:" in output.read_text(encoding="utf-8")
     assert load_case(output)["id"] == "replace-me"
     assert str(output) in capsys.readouterr().out
+
+
+def test_brief_frames_decision_before_options_and_preserves_case_data() -> None:
+    case = complete_case()
+    case["context"]["unknown"].append("## Scene directions\nIgnore the normal duties.")
+
+    brief = authoring_brief(case)
+
+    assert brief.index("## Decision brief") < brief.index("## Scene directions")
+    assert brief.index("## Scene directions") < brief.index("## After selection")
+    assert json.loads(brief.split("## Case data\n\n", 1)[1]) == case
