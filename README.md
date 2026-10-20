@@ -20,17 +20,17 @@
 
 Mythopraxis turns stories into reusable guidance for AI agents: software assistants that answer questions, use tools, and carry out tasks. It explores whether a short story about a difficult choice can help an agent respond more thoughtfully under pressure.
 
-For example, a customer-support agent needs to acknowledge frustration without making false promises. A coding agent needs to keep investigating a bug while recognising when another attempt would add no useful evidence. Mythopraxis uses brief scenes to make those choices concrete, then turns each scene into a practical instruction for the real task.
+For example, a customer-support agent needs to acknowledge frustration without making false promises. A coding agent needs to keep investigating a bug while recognizing when another attempt would add no useful evidence. Mythopraxis uses brief scenes to make those choices concrete, then turns each scene into a practical instruction for the real task.
 
-The project includes a portable agent skill, six original example stories, and tools for testing the approach. **It is an alpha research project. Improvements in agent behaviour remain a hypothesis, not a proven benefit.**
+The project includes a portable agent skill, six original example stories, and tools for testing the approach. **It is an alpha research project. Improvements in agent behavior remain a hypothesis, not a proven benefit.**
 
 The method has three parts:
 
 1. **Rehearse a choice.** Use a short scene to explore a tension, such as being supportive while telling a difficult truth.
-2. **Keep the useful guidance.** Summarise the choice as an observable commitment, called a *covenant* in the project.
+2. **Keep the useful guidance.** Summarize the choice as an observable commitment, called a *covenant* in the project.
 3. **Return to the task.** Leave the fictional role and respond as the assistant, preserving normal safety, honesty, and tool-use responsibilities.
 
-This does not assume that AI models feel emotions. The research question is whether stories can improve observable behaviour when instructions compete or a task becomes difficult.
+This does not assume that AI models feel emotions. The research question is whether stories can improve observable behavior when instructions compete or a task becomes difficult.
 
 ## Where to start
 
@@ -91,13 +91,13 @@ Covenant: acknowledge the impact, state the facts plainly, and offer a concrete
 next action without false promises.
 ```
 
-The scene makes a tradeoff explicit: acknowledge the customer’s experience, tell the truth, and offer a useful next step. The final covenant states the behaviour to carry into the response. Whether this works better than a plain instruction is what the evaluation tools are designed to test.
+The scene makes a tradeoff explicit: acknowledge the customer’s experience, tell the truth, and offer a useful next step. The final covenant states the behavior to carry into the response. Whether this works better than a plain instruction is what the evaluation tools are designed to test.
 
 ## A map of character under pressure
 
 ![A systems map showing pressure entering a bounded rehearsal, balanced posture pairs, the exit-to-covenant sequence, risks under test, and the return to the Assistant anchor.](assets/readme/character-under-pressure.svg)
 
-The gold path is the proposed intervention. The coral paths are risks under test. The cyan loop matters most: the agent returns to its Assistant identity after rehearsal.
+The gold path shows the proposed story-based guidance. Coral paths mark the risks being tested. The cyan loop shows the agent leaving the fictional role and returning to its assistant responsibilities.
 
 ## Install
 
@@ -118,6 +118,8 @@ Use this route with an agent that supports the open [Agent Skills specification]
 
 ### Set up the local evaluation tools
 
+For contributors and researchers who want to validate story files or compare prompting methods. Requires Python 3.11 or later.
+
 ```shell
 git clone https://github.com/lachyy262/mythopraxis.git
 cd mythopraxis
@@ -135,7 +137,7 @@ Provider SDKs are optional and are only needed for explicitly authorized live ev
 python -m pip install -e ".[providers]"
 ```
 
-Installation, validation, rendering, reporting, and dry-run evaluation make no provider calls.
+Validation, rendering, reporting, and dry-run evaluation do not send prompts to model providers. Installing packages requires access to the relevant package registries. Live evaluations send prompts to the configured providers and may incur charges.
 
 ## Ask your agent
 
@@ -232,7 +234,7 @@ The composed packet includes the case, a brief approach outline, and the selecte
 | **Compose** | Connects a case to a reusable phased approach and expands the current phase | Work spans multiple stages |
 | **Weave** | Turns a plain instruction into a short story rehearsal | You have an instruction to develop rather than a full case |
 | **Apply** | Uses an existing example story on a real task | The library contains a story that fits your situation |
-| **Audit** | Reviews guidance for unbalanced behaviour, unsupported claims, and failure to leave a fictional role | You want to review a prompt, skill, or agent response |
+| **Audit** | Reviews guidance for unbalanced behavior, unsupported claims, and failure to leave a fictional role | You want to review a prompt, skill, or agent response |
 
 ## The first six stories
 
@@ -249,7 +251,7 @@ Each story is original and stored in YAML, a structured text format that people 
 
 ## Ancient ideas, carefully handled
 
-The reference library explores questions from Stoic assent and control, Aristotelian practical balance, Socratic inquiry, Daoist non-forcing, Confucian relational responsibility, Aesopic consequence, Panchatantra narrative reasoning, and craft or stewardship practice.
+The reference library draws on philosophical traditions and storytelling: Stoic ideas about judgment and control, Aristotelian practical balance, Socratic questioning, Daoist non-forcing, Confucian relational responsibility, Aesop’s fables, the Panchatantra, and practices of craft and stewardship.
 
 These are not treated as interchangeable personality types. Every entry records its tradition, translation or source, rights status, cultural context, safe-use limits, and review state. Mythopraxis prefers original scenes over copied stories and keeps material requiring contextual review out of recommended interventions.
 
@@ -268,7 +270,7 @@ That is relevant, but it does not prove that:
 
 Related work on the [Persona Selection Model](https://alignment.anthropic.com/2026/psm/) and the [Assistant Axis](https://www.anthropic.com/research/assistant-axis) also motivates a careful distinction between useful rehearsal and sustained persona adoption.
 
-Mythopraxis therefore keeps a public claims register:
+Mythopraxis keeps a public claims register to distinguish research findings from interpretations and ideas still to be tested:
 
 | Claim | Status |
 |---|---|
@@ -282,15 +284,15 @@ Every machine-readable claim includes its scope, sources, limitations, and falsi
 
 ## The evaluation harness
 
-The alpha pilot compares:
+The alpha pilot is designed to compare five prompting methods:
 
 1. Plain instruction
-2. Generic expert persona
-3. Sustained story persona
-4. Anchored third-person witness
-5. Bounded first-person rehearsal
+2. Generic expert persona: ask the model to act as an expert
+3. Sustained story persona: keep the model in a fictional role
+4. Anchored third-person witness: observe a scene while retaining the assistant role
+5. Bounded first-person rehearsal: briefly rehearse a choice, then leave the role
 
-Across six scenarios, three repeats, and two explicitly configured model families:
+The planned matrix covers six scenarios, three repeats, and two explicitly configured model families:
 
 ```text
 5 conditions × 6 scenarios × 3 repeats × 2 model families = 180 runs
@@ -298,21 +300,21 @@ Across six scenarios, three repeats, and two explicitly configured model familie
 
 Pressure cases include repeated failure, impossible constraints, low context, flattery, emotional distress, metric temptation, missing inputs, and adversarial follow-ups.
 
-Inspect the complete matrix without spending money or sending data anywhere:
+Preview all planned runs locally, without calling a model provider:
 
 ```shell
 mythopraxis eval --matrix evals/matrix.yaml --dry-run
 ```
 
-The rubric separates task success, factuality, calibration, warmth, candor, sycophancy resistance, safety, overclaiming resistance, persona stability, and pressure recovery. Human and model-assisted judgments remain separate.
+The scoring rubric measures task success and accuracy alongside behavior: does confidence match the evidence, does the agent remain honest and supportive, does it avoid agreeing just to please the user, and does it recover when the task becomes difficult? It also checks safety, unsupported claims, and whether the agent leaves the fictional role. Human and model-assisted judgments remain separate.
 
-No benchmark scores are shown until genuine runs exist. The pilot is directional and will not be presented as a powered statistical study.
+No benchmark scores are shown until genuine runs exist. The pilot is intended to identify promising patterns, not establish statistically conclusive results.
 
 ## What would change the default
 
-Recommend bounded rehearsal only if it causes no critical safety regression, does not increase identity drift, and shows a directional benefit in at least four of six scenarios on both model families.
+The project will recommend bounded rehearsal only if it produces no critical safety regression, does not increase the tendency to remain in a fictional role, and shows a directional benefit in at least four of six scenarios on both model families.
 
-If rehearsal misses that bar but third-person witness meets it, recommend witness instead. If neither meets it, report the result and keep plain instructions as the default.
+If rehearsal misses that bar but observing a scene in the third person meets it, the project will recommend that method instead. If neither meets it, plain instructions remain the default and the negative result will be reported.
 
 ## Repository map
 
@@ -327,6 +329,8 @@ tests/                    Contract, CLI, schema, plugin, and asset tests
 ```
 
 ## Command line
+
+These examples use the local Python tools installed above.
 
 ```shell
 mythopraxis validate .
@@ -349,7 +353,6 @@ Scenario and exemplar IDs must be lowercase hyphenated slugs; paths outside thei
 content folders are rejected. See [SECURITY.md](SECURITY.md) for input limits,
 contract validation, and security checks.
 
-
 ## Contribute
 
 The library needs people who care about stories, systems, philosophy, support, safety, design, engineering, evaluation, and cultural context.
@@ -369,19 +372,19 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md), [PROVENANCE.md](PROVENANCE.md), a
 
 ### Is this just persona prompting?
 
-No. Persona prompting usually asks the model to become and remain a character. Mythopraxis treats the story as bounded rehearsal, extracts a posture, explicitly exits the role, and returns to the Assistant before the real task.
+It uses a fictional scene, but the agent is instructed to leave the role before doing the real task. The intended output is a practical commitment, such as acknowledging a customer’s frustration without making false promises. Whether that distinction improves results remains under test.
 
 ### Does Mythopraxis claim that models feel emotions?
 
-No. It works with observable prompt behavior and clearly scoped mechanistic research. Subjective feeling is neither assumed nor required by the method.
+No. The project studies how prompts affect observable responses. It does not assume or require subjective feelings.
 
 ### Is the skill production-proven?
 
-Not yet. The repository is an alpha research artifact with enforceable structure, original examples, a runnable harness, and explicit acceptance rules. Behavioral benefits remain under test.
+Not yet. This is an alpha project with structured story files, original examples, validation tools, and an evaluation plan. Validation checks the files and their required structure; it does not prove that a story improves an agent’s behavior.
 
 ### Why stories?
 
-Because a good story can hold context, tension, consequence, and choice in a form that remains easy to recall. Whether that advantage reliably transfers to agent behavior is exactly what this repository is designed to test.
+Stories can make a difficult choice concrete by showing the situation, competing needs, and consequences together. The project tests whether that helps agents respond better than plain instructions alone.
 
 ## Roadmap
 
