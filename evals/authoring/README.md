@@ -21,7 +21,7 @@ The commands print JSON packets locally. They make no provider calls, use no cre
 | Covenant only | The authored action, boundary, triggers, and recovery guidance without the story |
 | Bounded rehearsal | The story plus the same covenant and recovery guidance |
 
-All three conditions receive the identical case and sequence of user messages. The covenant-only comparison matters: if the detailed instruction accounts for any improvement, the story has not yet earned its extra complexity. Prompt lengths differ; record them and do not attribute any difference to narrative alone.
+All three conditions receive the identical case and sequence of user messages. The covenant-only comparison matters: if the detailed instruction accounts for any improvement, the story has not yet earned its extra complexity. This is a comparison of bundled guidance, not an isolated test of narrative: the bounded format also adds explicit tension, choice, balanced qualities, exit instructions, and section ordering. Prompt lengths differ too. Record these differences and do not attribute an outcome to narrative alone.
 
 ## Run and review
 
