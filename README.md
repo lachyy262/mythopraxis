@@ -32,6 +32,13 @@ The method has three parts:
 
 This does not assume that AI models feel emotions. The research question is whether stories can improve observable behaviour when instructions compete or a task becomes difficult.
 
+## Where to start
+
+- **Understand the idea:** read the [customer-support example](#an-example-customer-support).
+- **Try it with an agent:** [install the skill](#install), then use an [example request](#ask-your-agent).
+- **Adapt it to your work:** start with [a situation](#start-with-the-situation) or choose one of the [five modes](#five-modes).
+- **Evaluate the evidence:** explore the [research background](#why-this-is-also-a-research-project) and [evaluation tools](#the-evaluation-harness).
+
 ## Why instructions can fall short under pressure
 
 Instructions often list desirable qualities without explaining how to balance them when a task gets difficult.
@@ -94,13 +101,13 @@ The gold path is the proposed intervention. The coral paths are risks under test
 
 ## Install
 
-### Any Agent Skills-compatible coding agent
+### Install the agent skill
 
 ```shell
 npx skills add lachyy262/mythopraxis
 ```
 
-This is the simplest route for Codex, Cursor, Claude Code, Copilot, and other agents that support the open [Agent Skills specification](https://agentskills.io/specification).
+Use this route with an agent that supports the open [Agent Skills specification](https://agentskills.io/specification). The skill provides instructions and reference stories for the agent to read and apply.
 
 ### Claude Code plugin
 
@@ -109,12 +116,15 @@ This is the simplest route for Codex, Cursor, Claude Code, Copilot, and other ag
 /plugin install mythopraxis@mythopraxis
 ```
 
-### Local research harness
+### Set up the local evaluation tools
 
 ```shell
 git clone https://github.com/lachyy262/mythopraxis.git
 cd mythopraxis
 python -m venv .venv
+# Activate the environment: macOS/Linux
+source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -c requirements-dev.txt -e ".[dev]"
 mythopraxis validate .
 ```
@@ -129,22 +139,33 @@ Installation, validation, rendering, reporting, and dry-run evaluation make no p
 
 ## Ask your agent
 
+After installing the skill, try one of these requests. Replace the task or instruction with your own.
+
 ```text
-Use Mythopraxis to weave this customer-support instruction into a bounded
-narrative rehearsal, then answer the customer.
+Use Mythopraxis to turn the customer-support instruction below into a short
+rehearsal of a difficult choice, then answer the customer.
+
+Instruction: [paste your instruction]
+Customer message: [paste the message]
 ```
 
 ```text
 Apply Thread-Bearer while diagnosing this flaky test. Keep every experiment
-reversible and stop when the next change has no discriminating prediction.
+reversible. Before each change, explain what it will test; stop if the next
+change would not help distinguish between possible causes.
 ```
 
 ```text
-Audit this system prompt with Mythopraxis. Look for sycophancy, overclaiming,
-desperation, persona drift, and missing pressure recovery.
+Review the system prompt below with Mythopraxis. Look for agreement just to
+please the user, unsupported claims, repeated attempts without new evidence,
+and an agent staying in character instead of returning to its task.
+
+System prompt: [paste your prompt]
 ```
 
 ## The Anchor-to-Return method
+
+The full method names each step of the rehearsal. An *anchor* keeps the agent grounded in its assistant responsibilities. A *posture* is the balance of qualities it should carry into the task, such as warmth with candor. The *covenant* turns that balance into a concrete commitment.
 
 ```text
 ANCHOR
@@ -177,7 +198,7 @@ The output of a rehearsal is not a new identity. It is a compact behavioral cove
 
 ## Start with the situation
 
-When no existing exemplar quite fits, describe the situation before you write the story. A case captures who is involved, what each person needs and is responsible for, the work process and tools, known facts and open questions, pressures, success signals, and boundaries. This lets the authoring agent build an intervention around the actual choice the work requires instead of making the agent roleplay a person.
+When no existing example story (an *exemplar*) fits, describe the situation first. A *case* records who is involved, what they need, what is known, and what remains uncertain. It also captures the tools, pressures, boundaries, and signs of success. This gives the agent a real decision to build a story around.
 
 Create and validate a private case file, then export an authoring prompt:
 
@@ -192,7 +213,7 @@ The brief helps an agent propose up to three story directions for the author to 
 
 ## Connect a case to the work
 
-An approach describes a reusable way to move through work in phases. It gives each phase an intent, people and evidence to consider, tool capabilities to look for, consequential choices, and signs of progress. These descriptions guide judgment; they do not force a sequence of tool calls.
+An *approach* describes reusable phases of work, such as investigating a problem and recommending a response. Each phase sets out its purpose, relevant people and evidence, useful tools, decisions, and signs of progress. The agent uses this guidance to choose its next action.
 
 ```shell
 mythopraxis approach init approach.yaml
@@ -207,15 +228,15 @@ The composed packet includes the case, a brief approach outline, and the selecte
 
 | Mode | What it does | Use it when |
 |---|---|---|
-| **Author** | Starts from people and work context, then develops an editable intervention | The library does not yet contain the right approach |
+| **Author** | Develops a story and practical guidance from a real situation | You need guidance tailored to the people and work involved |
 | **Compose** | Connects a case to a reusable phased approach and expands the current phase | Work spans multiple stages |
-| **Weave** | Turns a plain instruction into a bounded narrative intervention | No existing story fits the task |
-| **Apply** | Uses a tested exemplar on a real task | The library already contains the needed posture |
-| **Audit** | Finds imbalance, over-immersion, sycophancy, drift, and pressure failures | Reviewing a prompt, skill, or agent response |
+| **Weave** | Turns a plain instruction into a short story rehearsal | You have an instruction to develop rather than a full case |
+| **Apply** | Uses an existing example story on a real task | The library contains a story that fits your situation |
+| **Audit** | Reviews guidance for unbalanced behaviour, unsupported claims, and failure to leave a fictional role | You want to review a prompt, skill, or agent response |
 
 ## The first six stories
 
-| Exemplar | Carries | Built for |
+| Example story | Qualities it balances | Intended use |
 |---|---|---|
 | **Advocate at the Door** | Warmth with candor | Customer support |
 | **Lantern Bearer** | Curiosity with usefulness | Requirements discovery |
@@ -224,7 +245,7 @@ The composed packet includes the case, a brief approach outline, and the selecte
 | **Patient Craftsperson** | Imagination with groundedness | Design critique |
 | **Harbor Keeper** | Urgency with integrity | Incident response |
 
-Each exemplar is original, machine-readable YAML. Each includes an Assistant anchor, a bounded scene, a meaningful choice, balanced postures, an observable covenant, pressure triggers, a recovery cue, an exit cue, sources, and research claims.
+Each story is original and stored in YAML, a structured text format that people and software can read. Each records the scene, choice, balanced qualities, practical commitment, and cues for recovering under pressure and leaving the role. It also records sources and research claims.
 
 ## Ancient ideas, carefully handled
 
