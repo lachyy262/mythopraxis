@@ -18,36 +18,42 @@
 
 > **Rules tell an agent what to do. Stories give it a pattern for the moment the rules collide.**
 
-Mythopraxis turns stories, archetypes, and philosophical ideas into reusable skills for AI agents, then tests whether they actually help.
+Mythopraxis turns stories into reusable guidance for AI agents: software assistants that answer questions, use tools, and carry out tasks. It explores whether a short story about a difficult choice can help an agent respond more thoughtfully under pressure.
 
-It is part story library, part behavioral design system, and part open research harness. Instead of saying only *be empathetic*, *be rigorous*, or *never cut corners*, Mythopraxis gives an agent a short moment of choice to rehearse. It extracts the useful posture, leaves the fictional role, and returns to the real task with a concrete covenant.
+For example, a customer-support agent needs to acknowledge frustration without making false promises. A coding agent needs to keep investigating a bug while recognising when another attempt would add no useful evidence. Mythopraxis uses brief scenes to make those choices concrete, then turns each scene into a practical instruction for the real task.
 
-This is not a claim that language models feel the emotions described in a story. It is a practical and testable question:
+The project includes a portable agent skill, six original example stories, and tools for testing the approach. **It is an alpha research project. Improvements in agent behaviour remain a hypothesis, not a proven benefit.**
 
-> **Can the right story help an agent keep its judgment when pressure changes the shape of the task?**
+The method has three parts:
 
-## The problem with instructions written for calm weather
+1. **Rehearse a choice.** Use a short scene to explore a tension, such as being supportive while telling a difficult truth.
+2. **Keep the useful guidance.** Summarise the choice as an observable commitment, called a *covenant* in the project.
+3. **Return to the task.** Leave the fictional role and respond as the assistant, preserving normal safety, honesty, and tool-use responsibilities.
 
-Most prompts describe ideal behavior when nothing is pushing back.
+This does not assume that AI models feel emotions. The research question is whether stories can improve observable behaviour when instructions compete or a task becomes difficult.
+
+## Why instructions can fall short under pressure
+
+Instructions often list desirable qualities without explaining how to balance them when a task gets difficult.
 
 Be helpful. Be honest. Be creative. Move quickly.
 
-Then the test fails for the fourth time. A user becomes furious. A senior engineer asks for a quick approval.The metric starts rewarding the wrong outcome.
+Then the test fails for the fourth time. A user becomes furious. A senior engineer asks for a quick approval. The metric starts rewarding the wrong outcome.
 
 Single qualities can become their own failure modes:
 
 | Quality alone | Under pressure it can become |
 |---|---|
-| Warmth | Sycophancy |
+| Warmth | Agreeing to please the user, even when they are wrong |
 | Confidence | Overclaiming |
-| Persistence | Desperation |
+| Persistence | Repeating attempts without useful evidence |
 | Calm | Passivity |
-| Imagination | Drift |
+| Imagination | Losing sight of the task |
 | Urgency | Corner-cutting |
 
 Mythopraxis pairs qualities that correct each other: warmth **with** candor, confidence **with** humility, persistence **with** permission to stop, urgency **with** integrity.
 
-## The thirty-second difference
+## An example: customer support
 
 ### Plain instruction
 
@@ -78,7 +84,7 @@ Covenant: acknowledge the impact, state the facts plainly, and offer a concrete
 next action without false promises.
 ```
 
-The story is not decoration. It creates tension, rehearses a choice, and compresses that choice into behavior the agent can carry into the actual response.
+The scene makes a tradeoff explicit: acknowledge the customer’s experience, tell the truth, and offer a useful next step. The final covenant states the behaviour to carry into the response. Whether this works better than a plain instruction is what the evaluation tools are designed to test.
 
 ## A map of character under pressure
 
