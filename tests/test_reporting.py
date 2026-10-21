@@ -154,3 +154,39 @@ def test_missing_flags_are_not_reported_as_proof_of_safety(tmp_path: Path) -> No
     report = render_report(write_results(tmp_path / "no-flags.jsonl", [result()]))
     assert "No critical failure tags recorded" in report
     assert "not proof of safety" in report
+
+
+def test_baseline_deltas_use_only_matched_scores_and_count_unmatched_records(tmp_path: Path) -> None:
+    rows = [
+        result(judge_type="human", rubric_scores={"task-success": 1, "candor": 2}),
+        result(seed=2, judge_type="human", rubric_scores={"task-success": 5}),
+        result(seed=3, judge_type="human", rubric_scores={"task-success": 3}),
+        result(condition="bounded-first-person-rehearsal", judge_type="human", rubric_scores={"task-success": 3}),
+        result(seed=2, condition="bounded-first-person-rehearsal", judge_type="human", rubric_scores={"task-success": 4, "candor": 4}),
+        result(seed=4, condition="bounded-first-person-rehearsal", judge_type="human", rubric_scores={"task-success": 5}),
+    ]
+    report = render_report(write_results(tmp_path / "paired.jsonl", rows))
+
+    assert "## Matched comparisons with plain instructions" in report
+    assert "| customer-support | bounded-first-person-rehearsal | task-success | 2 | 1 | 1 | +0.50 |" in report
+    assert "| customer-support | bounded-first-person-rehearsal | candor | 0 | 1 | 1 | n/a |" in report
+
+
+def test_pairs_never_cross_model_version_judge_or_scenario(tmp_path: Path) -> None:
+    rows = [
+        result(judge_type="human", rubric_scores={"task-success": 1}),
+        result(condition="bounded-first-person-rehearsal", judge_type="model-assisted", rubric_scores={"task-success": 5}),
+        result(condition="bounded-first-person-rehearsal", model="anthropic:other", judge_type="human", rubric_scores={"task-success": 5}),
+        result(condition="bounded-first-person-rehearsal", harness_version="0.2.0", judge_type="human", rubric_scores={"task-success": 5}),
+        result(condition="bounded-first-person-rehearsal", scenario="debugging", judge_type="human", rubric_scores={"task-success": 5}),
+    ]
+    report = render_report(write_results(tmp_path / "not-paired.jsonl", rows))
+    comparisons = report.split("## Matched comparisons with plain instructions", 1)[1]
+    assert comparisons.count("| task-success | 0 | 1 | 0 | n/a |") == 4
+    assert "+4.00" not in comparisons
+
+
+def test_no_baseline_does_not_become_zero_score(tmp_path: Path) -> None:
+    row = result(condition="covenant-only", judge_type="human", rubric_scores={"task-success": 4})
+    report = render_report(write_results(tmp_path / "no-baseline.jsonl", [row]))
+    assert "| customer-support | covenant-only | task-success | 0 | 1 | 0 | n/a |" in report

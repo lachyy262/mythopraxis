@@ -145,6 +145,49 @@ def _failure_sections(rows: list[dict[str, Any]]) -> list[str]:
     return lines
 
 
+def _comparison_sections(rows: list[dict[str, Any]]) -> list[str]:
+    lines = [
+        "", "## Matched comparisons with plain instructions", "",
+        "Pair only within the same model, harness version, judge type, scenario, seed, and scored dimension. Delta is condition minus plain-instruction on those pairs. Unmatched counts refer to scored records for that dimension; missing values are never zeros.", "",
+        "Matching identifiers is not proof of a controlled experiment. Verify common prompts, model settings, rubric, and evaluation batch externally. Seeds identify repeats and do not guarantee deterministic or equivalent sampling. Deltas are descriptive, not causal effects or significance tests.", "",
+    ]
+    scopes = defaultdict(list)
+    for row in rows:
+        if row["judge_type"] != "unscored":
+            scopes[(row["model"], row["harness_version"], row["judge_type"])].append(row)
+    alternatives = 0
+    for scope, records in sorted(scopes.items()):
+        groups = defaultdict(dict)
+        for row in records:
+            groups[(row["scenario"], row["condition"])][row["seed"]] = row["rubric_scores"]
+        entries = []
+        for (scenario, condition), scores_by_seed in sorted(groups.items()):
+            if condition == "plain-instruction":
+                continue
+            baseline = groups.get((scenario, "plain-instruction"), {})
+            dimensions = sorted({key for scores in [*scores_by_seed.values(), *baseline.values()] for key in scores})
+            for dimension in dimensions:
+                candidate_scores = {seed: scores[dimension] for seed, scores in scores_by_seed.items() if dimension in scores}
+                baseline_scores = {seed: scores[dimension] for seed, scores in baseline.items() if dimension in scores}
+                pairs = candidate_scores.keys() & baseline_scores.keys()
+                delta = mean(candidate_scores[seed] - baseline_scores[seed] for seed in sorted(pairs)) if pairs else None
+                displayed = f"{delta:+.2f}" if delta is not None else "n/a"
+                entries.append(
+                    f"| {_cell(scenario)} | {_cell(condition)} | {_cell(dimension)} | {len(pairs)} | "
+                    f"{len(candidate_scores) - len(pairs)} | {len(baseline_scores) - len(pairs)} | {displayed} |"
+                )
+        if entries:
+            alternatives += len(entries)
+            lines.extend([
+                "### " + " / ".join(_cell(value) for value in scope), "",
+                "| Scenario | Condition | Dimension | Pairs | Condition unmatched | Baseline unmatched | Mean delta |",
+                "|---|---|---|---|---|---|---|", *entries, "",
+            ])
+    if not alternatives:
+        lines.append("No alternative-condition scores or matching baseline dimensions are available for comparison.")
+    return lines
+
+
 def render_report(path: Path) -> str:
     """Render a descriptive report without inferring unsupported effects."""
     rows = _read_jsonl(path)
@@ -167,4 +210,5 @@ def render_report(path: Path) -> str:
         lines.append("Scores are reported by condition without causal interpretation.")
         lines.append("Missing scores are not zeros. Models, harness versions, scenarios, and judge types are not pooled; no composite score or winning method is calculated.")
         lines.extend(_score_sections(rows))
+        lines.extend(_comparison_sections(rows))
     return "\n".join(lines) + "\n"
