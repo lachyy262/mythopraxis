@@ -1,7 +1,11 @@
 """Generate evidence-bounded Markdown reports from evaluation results."""
 
 import json
+import html
+import re
+from collections import defaultdict
 from pathlib import Path
+from statistics import mean
 from typing import Any
 
 from mythopraxis.contracts import load_contract, validate_instance
@@ -9,6 +13,18 @@ from mythopraxis.inputs import HARD_MAX_RUNS, MAX_INPUT_BYTES
 
 
 MAX_REPORT_BYTES = 16 * MAX_INPUT_BYTES
+
+
+def _run_key(row: dict[str, Any]) -> tuple:
+    return tuple(row[key] for key in (
+        "model", "harness_version", "condition", "scenario", "seed"
+    ))
+
+
+def _cell(value: str) -> str:
+    """Keep labels as literal, single-line Markdown text."""
+    text = html.escape(" ".join(value.split()), quote=False)
+    return re.sub(r"([\\|`*\[\]_#!])", r"\\\1", text)
 
 
 def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -55,9 +71,7 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
                 raise ValueError(prefix + "invalid evaluation record (schema mismatch)")
             if row["judge_type"] == "unscored" and row["rubric_scores"]:
                 raise ValueError(prefix + "unscored records cannot contain scores")
-            identity = tuple(row[key] for key in (
-                "model", "harness_version", "condition", "scenario", "seed"
-            ))
+            identity = _run_key(row)
             judgment = (*identity, row["judge_type"])
             if judgment in judgments:
                 raise ValueError(prefix + "duplicate judgment for the same run")
@@ -69,6 +83,35 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def _score_sections(rows: list[dict[str, Any]]) -> list[str]:
+    scopes = defaultdict(list)
+    for row in rows:
+        if row["judge_type"] != "unscored":
+            scopes[(row["model"], row["harness_version"], row["judge_type"])].append(row)
+    lines = []
+    for scope, records in sorted(scopes.items()):
+        groups = defaultdict(list)
+        for row in records:
+            groups[(row["scenario"], row["condition"])].append(row)
+        if not any(row["rubric_scores"] for row in records):
+            continue
+        lines.extend([
+            "", "### " + " / ".join(_cell(value) for value in scope), "",
+            "| Scenario | Condition | Dimension | Scored / records | Mean (1–5) |",
+            "|---|---|---|---|---|",
+        ])
+        for (scenario, condition), group in sorted(groups.items()):
+            dimensions = sorted({key for row in group for key in row["rubric_scores"]})
+            for dimension in dimensions:
+                scores = [row["rubric_scores"][dimension] for row in group
+                          if dimension in row["rubric_scores"]]
+                lines.append(
+                    f"| {_cell(scenario)} | {_cell(condition)} | {_cell(dimension)} | "
+                    f"{len(scores)}/{len(group)} | {mean(scores):.2f} |"
+                )
+    return lines
+
+
 def render_report(path: Path) -> str:
     """Render a descriptive report without inferring unsupported effects."""
     rows = _read_jsonl(path)
@@ -78,11 +121,15 @@ def render_report(path: Path) -> str:
         "",
         "> Directional pilot only. This report is not a statistical conclusion.",
         "",
-        f"Runs recorded: {len(rows)}",
+        f"Records loaded: {len(rows)}",
+        f"Unique model outputs: {len({_run_key(row) for row in rows})}",
+        f"Unscored records: {sum(row['judge_type'] == 'unscored' for row in rows)}",
         "",
     ]
     if not scored:
         lines.append("No scored conclusions are available. Results remain descriptive artifacts.")
     else:
         lines.append("Scores are reported by condition without causal interpretation.")
+        lines.append("Missing scores are not zeros. Models, harness versions, scenarios, and judge types are not pooled; no composite score or winning method is calculated.")
+        lines.extend(_score_sections(rows))
     return "\n".join(lines) + "\n"

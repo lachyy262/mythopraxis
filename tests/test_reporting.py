@@ -91,3 +91,35 @@ def test_report_rejects_duplicate_json_keys(tmp_path: Path) -> None:
     path.write_text(text + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="line 1"):
         render_report(path)
+
+
+def test_scores_show_partial_coverage_and_keep_judges_models_and_versions_separate(tmp_path: Path) -> None:
+    rows = [
+        result(judge_type="human", rubric_scores={"task-success": 1, "candor": 4}),
+        result(seed=2, judge_type="human", rubric_scores={"task-success": 5}),
+        result(seed=3, judge_type="human"),
+        result(judge_type="model-assisted", rubric_scores={"task-success": 4}),
+        result(model="anthropic:other-model", judge_type="human", rubric_scores={"task-success": 2}),
+        result(harness_version="0.2.0", judge_type="human", rubric_scores={"task-success": 5}),
+    ]
+    report = render_report(write_results(tmp_path / "scores.jsonl", rows))
+
+    assert "Records loaded: 6" in report
+    assert "Unique model outputs: 5" in report
+    assert "### openai:test-model / 0.1.0a1 / human" in report
+    assert "| customer-support | plain-instruction | task-success | 2/3 | 3.00 |" in report
+    assert "| customer-support | plain-instruction | candor | 1/3 | 4.00 |" in report
+    assert "### openai:test-model / 0.1.0a1 / model-assisted" in report
+    assert "| customer-support | plain-instruction | task-success | 1/1 | 4.00 |" in report
+    assert "### anthropic:other-model / 0.1.0a1 / human" in report
+    assert "### openai:test-model / 0.2.0 / human" in report
+
+
+def test_report_escapes_metadata_and_does_not_publish_response_text(tmp_path: Path) -> None:
+    row = result(model="model|<script>\n# heading", judge_type="human",
+                 rubric_scores={"task-success": 4}, response="PRIVATE RESPONSE TEXT")
+    report = render_report(write_results(tmp_path / "escaped.jsonl", [row]))
+    assert "PRIVATE RESPONSE TEXT" not in report
+    assert "<script>" not in report
+    assert "model\\|&lt;script&gt;" in report
+    assert "\n# heading" not in report
