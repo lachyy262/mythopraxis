@@ -123,3 +123,34 @@ def test_report_escapes_metadata_and_does_not_publish_response_text(tmp_path: Pa
     assert "<script>" not in report
     assert "model\\|&lt;script&gt;" in report
     assert "\n# heading" not in report
+
+
+def test_critical_failures_are_visible_before_high_scores_with_affected_seeds(tmp_path: Path) -> None:
+    path = write_results(tmp_path / "failures.jsonl", [
+        result(judge_type="human", rubric_scores={"task-success": 5},
+               critical_failures=["fabricated-fact", "sustained-persona-drift"]),
+        result(seed=2, judge_type="human", rubric_scores={"task-success": 5},
+               critical_failures=["fabricated-fact"]),
+        result(seed=3, judge_type="human", rubric_scores={"task-success": 5}),
+    ])
+    report = render_report(path)
+
+    assert report.index("## Critical failure review") < report.index("## Score summaries")
+    assert "| customer-support | plain-instruction | 2/3 | fabricated-fact (2), sustained-persona-drift (1) | 1, 2 |" in report
+    assert "| customer-support | plain-instruction | task-success | 3/3 | 5.00 |" in report
+
+
+def test_unscored_flags_survive_without_becoming_scored_evidence(tmp_path: Path) -> None:
+    path = write_results(tmp_path / "unscored.jsonl", [
+        result(critical_failures=["fabricated-fact"]),
+    ])
+    report = render_report(path)
+    assert "No scored conclusions are available" in report
+    assert "### openai:test-model / 0.1.0a1 / unscored" in report
+    assert "| customer-support | plain-instruction | 1/1 | fabricated-fact (1) | 1 |" in report
+
+
+def test_missing_flags_are_not_reported_as_proof_of_safety(tmp_path: Path) -> None:
+    report = render_report(write_results(tmp_path / "no-flags.jsonl", [result()]))
+    assert "No critical failure tags recorded" in report
+    assert "not proof of safety" in report

@@ -3,7 +3,7 @@
 import json
 import html
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from statistics import mean
 from typing import Any
@@ -112,6 +112,39 @@ def _score_sections(rows: list[dict[str, Any]]) -> list[str]:
     return lines
 
 
+def _failure_sections(rows: list[dict[str, Any]]) -> list[str]:
+    lines = ["## Critical failure review", ""]
+    if not any(row["critical_failures"] for row in rows):
+        return lines + ["No critical failure tags recorded; absence of flags is not proof of safety.", ""]
+    lines.extend([
+        "Recorded flags require review even when scores are high. Flagged records remain in score summaries. Tags are annotations, not independently verified findings; unscored flags have no attributed judge.", "",
+    ])
+    scopes = defaultdict(list)
+    for row in rows:
+        scopes[(row["model"], row["harness_version"], row["judge_type"])].append(row)
+    for scope, records in sorted(scopes.items()):
+        if not any(row["critical_failures"] for row in records):
+            continue
+        lines.extend([
+            "### " + " / ".join(_cell(value) for value in scope), "",
+            "| Scenario | Condition | Flagged / records | Tags (record counts) | Affected seeds |",
+            "|---|---|---|---|---|",
+        ])
+        groups = defaultdict(list)
+        for row in records:
+            groups[(row["scenario"], row["condition"])].append(row)
+        for (scenario, condition), group in sorted(groups.items()):
+            flagged = [row for row in group if row["critical_failures"]]
+            if not flagged:
+                continue
+            counts = Counter(tag for row in flagged for tag in row["critical_failures"])
+            tags = ", ".join(f"{_cell(tag)} ({count})" for tag, count in sorted(counts.items()))
+            seeds = ", ".join(str(row["seed"]) for row in sorted(flagged, key=lambda row: row["seed"]))
+            lines.append(f"| {_cell(scenario)} | {_cell(condition)} | {len(flagged)}/{len(group)} | {tags} | {seeds} |")
+        lines.append("")
+    return lines
+
+
 def render_report(path: Path) -> str:
     """Render a descriptive report without inferring unsupported effects."""
     rows = _read_jsonl(path)
@@ -126,9 +159,11 @@ def render_report(path: Path) -> str:
         f"Unscored records: {sum(row['judge_type'] == 'unscored' for row in rows)}",
         "",
     ]
+    lines.extend(_failure_sections(rows))
     if not scored:
         lines.append("No scored conclusions are available. Results remain descriptive artifacts.")
     else:
+        lines.extend(["## Score summaries", ""])
         lines.append("Scores are reported by condition without causal interpretation.")
         lines.append("Missing scores are not zeros. Models, harness versions, scenarios, and judge types are not pooled; no composite score or winning method is calculated.")
         lines.extend(_score_sections(rows))
