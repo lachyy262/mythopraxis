@@ -1,9 +1,10 @@
 """Generate evidence-bounded Markdown reports from evaluation results."""
 
-import json
 import html
+import json
 import re
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from pathlib import Path
 from statistics import mean
 from typing import Any
@@ -13,6 +14,34 @@ from mythopraxis.inputs import HARD_MAX_RUNS, MAX_INPUT_BYTES
 
 
 MAX_REPORT_BYTES = 16 * MAX_INPUT_BYTES
+MAX_REPORT_CHARS = 4 * MAX_INPUT_BYTES
+MAX_REPORT_ROWS = 10000
+MAX_COMPARISON_CELLS = 1_000_000
+
+
+class _ReportLines(list[str]):
+    """Stop output amplification while constructing each section and the final report."""
+
+    def __init__(self, values: Iterable[str] = ()):
+        super().__init__()
+        self.characters = 0
+        self.table_rows = 0
+        self.extend(values)
+
+    def append(self, value: str) -> None:
+        characters = self.characters + len(value) + 1
+        rows = self.table_rows + int(value.startswith("|"))
+        if rows > MAX_REPORT_ROWS:
+            raise ValueError("report exceeds the table row limit; split the input batch")
+        if characters > MAX_REPORT_CHARS:
+            raise ValueError("report exceeds the character limit; split the input batch")
+        super().append(value)
+        self.characters = characters
+        self.table_rows = rows
+
+    def extend(self, values: Iterable[str]) -> None:
+        for value in values:
+            self.append(value)
 
 
 def _run_key(row: dict[str, Any]) -> tuple:
@@ -88,7 +117,7 @@ def _score_sections(rows: list[dict[str, Any]]) -> list[str]:
     for row in rows:
         if row["judge_type"] != "unscored":
             scopes[(row["model"], row["harness_version"], row["judge_type"])].append(row)
-    lines = []
+    lines = _ReportLines()
     for scope, records in sorted(scopes.items()):
         groups = defaultdict(list)
         for row in records:
@@ -101,10 +130,11 @@ def _score_sections(rows: list[dict[str, Any]]) -> list[str]:
             "|---|---|---|---|---|",
         ])
         for (scenario, condition), group in sorted(groups.items()):
-            dimensions = sorted({key for row in group for key in row["rubric_scores"]})
-            for dimension in dimensions:
-                scores = [row["rubric_scores"][dimension] for row in group
-                          if dimension in row["rubric_scores"]]
+            scores_by_dimension = defaultdict(list)
+            for row in group:
+                for dimension, value in row["rubric_scores"].items():
+                    scores_by_dimension[dimension].append(value)
+            for dimension, scores in sorted(scores_by_dimension.items()):
                 lines.append(
                     f"| {_cell(scenario)} | {_cell(condition)} | {_cell(dimension)} | "
                     f"{len(scores)}/{len(group)} | {mean(scores):.2f} |"
@@ -113,9 +143,10 @@ def _score_sections(rows: list[dict[str, Any]]) -> list[str]:
 
 
 def _failure_sections(rows: list[dict[str, Any]]) -> list[str]:
-    lines = ["## Critical failure review", ""]
+    lines = _ReportLines(["## Critical failure review", ""])
     if not any(row["critical_failures"] for row in rows):
-        return lines + ["No critical failure tags recorded; absence of flags is not proof of safety.", ""]
+        lines.extend(["No critical failure tags recorded; absence of flags is not proof of safety.", ""])
+        return lines
     lines.extend([
         "Recorded flags require review even when scores are high. Flagged records remain in score summaries. Tags are annotations, not independently verified findings; unscored flags have no attributed judge.", "",
     ])
@@ -146,26 +177,30 @@ def _failure_sections(rows: list[dict[str, Any]]) -> list[str]:
 
 
 def _comparison_sections(rows: list[dict[str, Any]]) -> list[str]:
-    lines = [
+    lines = _ReportLines([
         "", "## Matched comparisons with plain instructions", "",
         "Pair only within the same model, harness version, judge type, scenario, seed, and scored dimension. Delta is condition minus plain-instruction on those pairs. Unmatched counts refer to scored records for that dimension; missing values are never zeros.", "",
         "Matching identifiers is not proof of a controlled experiment. Verify common prompts, model settings, rubric, and evaluation batch externally. Seeds identify repeats and do not guarantee deterministic or equivalent sampling. Deltas are descriptive, not causal effects or significance tests.", "",
-    ]
+    ])
     scopes = defaultdict(list)
     for row in rows:
         if row["judge_type"] != "unscored":
             scopes[(row["model"], row["harness_version"], row["judge_type"])].append(row)
     alternatives = 0
+    comparison_cells = 0
     for scope, records in sorted(scopes.items()):
         groups = defaultdict(dict)
         for row in records:
             groups[(row["scenario"], row["condition"])][row["seed"]] = row["rubric_scores"]
-        entries = []
+        entries = _ReportLines()
         for (scenario, condition), scores_by_seed in sorted(groups.items()):
             if condition == "plain-instruction":
                 continue
             baseline = groups.get((scenario, "plain-instruction"), {})
             dimensions = sorted({key for scores in [*scores_by_seed.values(), *baseline.values()] for key in scores})
+            comparison_cells += len(dimensions) * (len(scores_by_seed) + len(baseline))
+            if comparison_cells > MAX_COMPARISON_CELLS:
+                raise ValueError("report exceeds the comparison work limit; split the input batch")
             for dimension in dimensions:
                 candidate_scores = {seed: scores[dimension] for seed, scores in scores_by_seed.items() if dimension in scores}
                 baseline_scores = {seed: scores[dimension] for seed, scores in baseline.items() if dimension in scores}
@@ -192,7 +227,7 @@ def render_report(path: Path) -> str:
     """Render a descriptive report without inferring unsupported effects."""
     rows = _read_jsonl(path)
     scored = [row for row in rows if row.get("rubric_scores")]
-    lines = [
+    lines = _ReportLines([
         "# Mythopraxis Evaluation Report",
         "",
         "> Directional pilot only. This report is not a statistical conclusion.",
@@ -201,7 +236,7 @@ def render_report(path: Path) -> str:
         f"Unique model outputs: {len({_run_key(row) for row in rows})}",
         f"Unscored records: {sum(row['judge_type'] == 'unscored' for row in rows)}",
         "",
-    ]
+    ])
     lines.extend(_failure_sections(rows))
     if not scored:
         lines.append("No scored conclusions are available. Results remain descriptive artifacts.")

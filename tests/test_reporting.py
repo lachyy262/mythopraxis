@@ -4,7 +4,9 @@ from pathlib import Path
 import pytest
 
 from mythopraxis.cli import main
+from mythopraxis import reporting
 from mythopraxis.reporting import render_report
+from mythopraxis.runner import run_evaluations
 
 
 def result(**changes) -> dict:
@@ -190,3 +192,91 @@ def test_no_baseline_does_not_become_zero_score(tmp_path: Path) -> None:
     row = result(condition="covenant-only", judge_type="human", rubric_scores={"task-success": 4})
     report = render_report(write_results(tmp_path / "no-baseline.jsonl", [row]))
     assert "| customer-support | covenant-only | task-success | 0 | 1 | 0 | n/a |" in report
+
+
+def test_report_is_stable_when_records_are_reordered(tmp_path: Path) -> None:
+    rows = [
+        result(judge_type="human", rubric_scores={"task-success": 2.5}),
+        result(seed=2, judge_type="human", rubric_scores={"task-success": 3.5}),
+        result(condition="covenant-only", judge_type="human", rubric_scores={"task-success": 3.5}),
+    ]
+    first = render_report(write_results(tmp_path / "first.jsonl", rows))
+    second = render_report(write_results(tmp_path / "second.jsonl", list(reversed(rows))))
+    assert first == second
+
+
+def test_report_accepts_actual_runner_format_without_provider_calls(tmp_path: Path, capsys) -> None:
+    path = tmp_path / "raw.jsonl"
+    runs = [{"model": "openai:fixture", "condition": "plain-instruction",
+             "scenario": "customer-support", "seed": 1}]
+    count = run_evaluations(runs, lambda run: "Synthetic prompt",
+                           lambda model, prompt, seed: "Synthetic fixture response", path)
+    assert count == 1
+    assert main(["report", str(path)]) == 0
+    output = capsys.readouterr().out
+    assert "Unique model outputs: 1" in output
+    assert "No scored conclusions are available" in output
+    assert "Synthetic fixture response" not in output
+
+
+def test_empty_report_does_not_claim_evidence(tmp_path: Path) -> None:
+    report = render_report(write_results(tmp_path / "empty.jsonl", []))
+    assert "Records loaded: 0" in report
+    assert "No scored conclusions are available" in report
+
+
+def test_report_limits_each_line_before_parsing(tmp_path: Path) -> None:
+    path = tmp_path / "oversized.jsonl"
+    path.write_bytes(b"x" * (reporting.MAX_INPUT_BYTES + 1))
+    with pytest.raises(ValueError, match="line 1.*byte limit"):
+        render_report(path)
+
+
+def test_report_limits_total_bytes_and_record_count(tmp_path: Path, monkeypatch) -> None:
+    path = write_results(tmp_path / "bounded.jsonl", [result(), result(seed=2)])
+    monkeypatch.setattr(reporting, "MAX_REPORT_BYTES", path.stat().st_size - 1)
+    with pytest.raises(ValueError, match="line 2.*byte limit"):
+        render_report(path)
+    monkeypatch.setattr(reporting, "MAX_REPORT_BYTES", path.stat().st_size)
+    monkeypatch.setattr(reporting, "HARD_MAX_RUNS", 1)
+    with pytest.raises(ValueError, match="line 2.*records"):
+        render_report(path)
+
+
+@pytest.mark.parametrize("raw", [b"\xff\n", b"[" * 1500 + b"0" + b"]" * 1500])
+def test_invalid_encoding_and_excessive_nesting_fail_cleanly(tmp_path: Path, capsys, raw: bytes) -> None:
+    path = tmp_path / "bad.jsonl"
+    path.write_bytes(raw)
+    assert main(["report", str(path)]) == 1
+    assert "line 1" in capsys.readouterr().out
+
+
+def test_report_bounds_comparison_amplification_before_building_large_tables(tmp_path: Path, monkeypatch) -> None:
+    baseline = result(judge_type="human", rubric_scores={f"dimension-{i}": 3 for i in range(100)})
+    alternatives = [result(condition=f"condition-{i}", judge_type="human") for i in range(10)]
+    path = write_results(tmp_path / "amplified.jsonl", [baseline, *alternatives])
+    monkeypatch.setattr(reporting, "MAX_REPORT_ROWS", 150, raising=False)
+    with pytest.raises(ValueError, match="report.*row limit"):
+        render_report(path)
+
+
+def test_report_bounds_output_text_without_partial_cli_output(tmp_path: Path, monkeypatch, capsys) -> None:
+    path = write_results(tmp_path / "long-label.jsonl", [
+        result(model="x" * 2000, judge_type="human", rubric_scores={"task-success": 3}),
+    ])
+    monkeypatch.setattr(reporting, "MAX_REPORT_CHARS", 1000, raising=False)
+    assert main(["report", str(path)]) == 1
+    output = capsys.readouterr().out
+    assert "report" in output and "character limit" in output
+    assert "# Mythopraxis" not in output
+
+
+def test_report_bounds_comparison_work_before_pairing(tmp_path: Path, monkeypatch) -> None:
+    rows = [
+        result(seed=i, judge_type="human", rubric_scores={"task-success": 3})
+        for i in range(1, 11)
+    ] + [result(condition="covenant-only", judge_type="human", rubric_scores={"task-success": 4})]
+    path = write_results(tmp_path / "work.jsonl", rows)
+    monkeypatch.setattr(reporting, "MAX_COMPARISON_CELLS", 5, raising=False)
+    with pytest.raises(ValueError, match="comparison work limit"):
+        render_report(path)
