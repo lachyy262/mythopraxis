@@ -344,6 +344,8 @@ mythopraxis eval --matrix evals/matrix.yaml --dry-run
 mythopraxis report evals/results/pilot.jsonl
 ```
 
+The report shows recorded critical failures before score summaries, keeps human and model-assisted judgments separate, and includes the number of records scored for each dimension. Comparisons with plain instructions use only matching scored records and show unmatched counts. It does not score responses or choose a winning method. See [how to prepare and interpret evaluation reports](evals/reporting.md).
+
 Live evaluation accepts model identifiers in `provider:model-id` form through `ANTHROPIC_MODEL` and `OPENAI_MODEL`. It requires the matching provider credentials and writes unscored JSONL. CI never performs live calls.
 
 Evaluations reject matrices above 1,000 runs by default. Use `--max-runs N` to

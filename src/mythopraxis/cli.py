@@ -107,7 +107,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Wrote {count} unscored runs to {output}")
         return 0
     if args.command == "report":
-        print(render_report(Path(args.results)), end="")
+        try:
+            report = render_report(Path(args.results))
+        except (OSError, ValueError) as error:
+            print(f"ERROR: {error}")
+            return 1
+        print(report, end="")
         return 0
     if args.command == "case":
         path = Path(args.path).expanduser()
