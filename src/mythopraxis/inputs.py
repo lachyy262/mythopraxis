@@ -1,5 +1,6 @@
 """Bounded local inputs and repository-contained content paths."""
 import re
+from collections.abc import Hashable
 from pathlib import Path
 from typing import Any
 
@@ -35,12 +36,19 @@ class _BoundedSafeLoader(yaml.SafeLoader):
 
     def construct_mapping(self, node, deep=False):
         mapping = {}
+        key_lines = {}
         for key_node, value_node in node.value:
+            if key_node.tag == "tag:yaml.org,2002:merge":
+                raise ValueError("YAML merge keys are not supported")
             key = self.construct_object(key_node, deep=deep)
-            if not isinstance(key, __import__('collections').abc.Hashable):
+            if not isinstance(key, Hashable):
                 raise ValueError("YAML mapping key must be hashable")
             if key in mapping:
-                raise ValueError("duplicate YAML mapping key")
+                raise ValueError(
+                    f"duplicate YAML mapping key at line {key_node.start_mark.line + 1} "
+                    f"(first at line {key_lines[key]})"
+                )
+            key_lines[key] = key_node.start_mark.line + 1
             mapping[key] = self.construct_object(value_node, deep=deep)
         return mapping
 

@@ -253,6 +253,8 @@ The composed packet includes the case, a brief approach outline, and the selecte
 
 Each story is original and stored in YAML, a structured text format that people and software can read. Each records the scene, choice, balanced qualities, practical commitment, and cues for recovering under pressure and leaving the role. It also records sources and research claims.
 
+Input files must not repeat a key within the same mapping. Repeated YAML keys are rejected with line numbers so an author can correct the ambiguity; aliases and merge keys are also unsupported. JSON case and configuration files follow the same rule for repeated keys.
+
 ## Ancient ideas, carefully handled
 
 The reference library draws on philosophical traditions and storytelling: Stoic ideas about judgment and control, Aristotelian practical balance, Socratic questioning, Daoist non-forcing, Confucian relational responsibility, Aesop’s fables, the Panchatantra, and practices of craft and stewardship.

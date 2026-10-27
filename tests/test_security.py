@@ -263,3 +263,22 @@ def test_nested_json_case_rejects_duplicate_keys(tmp_path):
     path.write_text('{"person": {"role": "first", "role": "second"}}')
     with pytest.raises(ValueError, match="duplicate"):
         load_yaml(path)
+
+
+def test_duplicate_yaml_error_identifies_lines_without_exposing_values(tmp_path):
+    from mythopraxis.inputs import load_yaml
+    path = tmp_path / "case.yaml"
+    path.write_text("people:\n  secret: PRIVATE_VALUE\n  secret: another\n")
+    with pytest.raises(ValueError) as error:
+        load_yaml(path)
+    assert "line 3" in str(error.value)
+    assert "line 2" in str(error.value)
+    assert "PRIVATE_VALUE" not in str(error.value)
+
+
+def test_yaml_merge_keys_are_rejected_explicitly(tmp_path):
+    from mythopraxis.inputs import load_yaml
+    path = tmp_path / "merge.yaml"
+    path.write_text('item: {<<: {role: reviewer}, role: author}\n')
+    with pytest.raises(ValueError, match="merge keys"):
+        load_yaml(path)
