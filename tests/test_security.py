@@ -240,3 +240,45 @@ def test_all_new_result_parent_directories_are_private(tmp_path):
         os.umask(previous)
     for name in ("a", "a/b", "a/b/c"):
         assert (tmp_path / name).stat().st_mode & 0o777 == 0o700
+
+
+def test_yaml_rejects_duplicate_mapping_keys(tmp_path):
+    from mythopraxis.inputs import load_yaml
+    path = tmp_path / "case.yaml"
+    path.write_text("purpose: first\npurpose: second\n")
+    with pytest.raises(ValueError, match="duplicate"):
+        load_yaml(path)
+
+
+def test_repository_rejects_duplicate_json_schema_keys(content_root):
+    path = content_root / "schemas/case.schema.json"
+    original = path.read_text()
+    path.write_text(original.replace('"$schema":', '"$schema": "ignored",\n  "$schema":', 1))
+    assert any("case.schema.json" in error and "duplicate" in error for error in validate_repository(content_root))
+
+
+def test_nested_json_case_rejects_duplicate_keys(tmp_path):
+    from mythopraxis.inputs import load_yaml
+    path = tmp_path / "case.json"
+    path.write_text('{"person": {"role": "first", "role": "second"}}')
+    with pytest.raises(ValueError, match="duplicate"):
+        load_yaml(path)
+
+
+def test_duplicate_yaml_error_identifies_lines_without_exposing_values(tmp_path):
+    from mythopraxis.inputs import load_yaml
+    path = tmp_path / "case.yaml"
+    path.write_text("people:\n  secret: PRIVATE_VALUE\n  secret: another\n")
+    with pytest.raises(ValueError) as error:
+        load_yaml(path)
+    assert "line 3" in str(error.value)
+    assert "line 2" in str(error.value)
+    assert "PRIVATE_VALUE" not in str(error.value)
+
+
+def test_yaml_merge_keys_are_rejected_explicitly(tmp_path):
+    from mythopraxis.inputs import load_yaml
+    path = tmp_path / "merge.yaml"
+    path.write_text('item: {<<: {role: reviewer}, role: author}\n')
+    with pytest.raises(ValueError, match="merge keys"):
+        load_yaml(path)

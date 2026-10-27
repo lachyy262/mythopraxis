@@ -18,6 +18,15 @@ REQUIRED_SCHEMA_FILES = {
 }
 
 
+def _unique_json_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON key")
+        result[key] = value
+    return result
+
+
 def find_broken_local_links(markdown_path: Path, root: Path) -> list[str]:
     text = read_text(markdown_path)
     targets = re.findall(r"!?\[[^\]]*\]\(([^)]+)\)", text)
@@ -54,7 +63,7 @@ def validate_repository(root: Path) -> list[str]:
     for name, contract in sorted(contracts.items()):
         try:
             path = content_path(root, Path("schemas") / name)
-            if json.loads(read_text(path)) != contract:
+            if json.loads(read_text(path), object_pairs_hook=_unique_json_object) != contract:
                 errors.append(f"schemas/{name}: differs from the trusted packaged contract")
         except (OSError, ValueError) as error:
             errors.append(f"schemas/{name}: {error}")
