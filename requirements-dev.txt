@@ -1,7 +1,7 @@
 # Resolved development, provider and audit dependencies (Python 3.12, 2026-10-02).
 # Used as CI constraints; refresh together and run pytest plus pip-audit.
 annotated-types==0.8.0
-anthropic==1.9.0
+anthropic==1.11.0
 anyio==4.15.1
 attrs==26.1.0
 bandit==1.9.4
