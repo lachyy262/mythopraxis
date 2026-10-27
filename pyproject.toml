@@ -31,7 +31,7 @@ audit = [
 ]
 providers = [
   "anthropic>=0.60,<2",
-  "openai>=1.100,<3",
+  "openai>=1.100,<4",
 ]
 
 [project.scripts]
