@@ -248,3 +248,18 @@ def test_yaml_rejects_duplicate_mapping_keys(tmp_path):
     path.write_text("purpose: first\npurpose: second\n")
     with pytest.raises(ValueError, match="duplicate"):
         load_yaml(path)
+
+
+def test_repository_rejects_duplicate_json_schema_keys(content_root):
+    path = content_root / "schemas/case.schema.json"
+    original = path.read_text()
+    path.write_text(original.replace('"$schema":', '"$schema": "ignored",\n  "$schema":', 1))
+    assert any("case.schema.json" in error and "duplicate" in error for error in validate_repository(content_root))
+
+
+def test_nested_json_case_rejects_duplicate_keys(tmp_path):
+    from mythopraxis.inputs import load_yaml
+    path = tmp_path / "case.json"
+    path.write_text('{"person": {"role": "first", "role": "second"}}')
+    with pytest.raises(ValueError, match="duplicate"):
+        load_yaml(path)
