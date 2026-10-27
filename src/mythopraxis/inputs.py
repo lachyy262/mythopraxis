@@ -33,6 +33,17 @@ class _BoundedSafeLoader(yaml.SafeLoader):
         finally:
             self.depth -= 1
 
+    def construct_mapping(self, node, deep=False):
+        mapping = {}
+        for key_node, value_node in node.value:
+            key = self.construct_object(key_node, deep=deep)
+            if not isinstance(key, __import__('collections').abc.Hashable):
+                raise ValueError("YAML mapping key must be hashable")
+            if key in mapping:
+                raise ValueError("duplicate YAML mapping key")
+            mapping[key] = self.construct_object(value_node, deep=deep)
+        return mapping
+
 
 def read_text(path: Path) -> str:
     """Read at most one MiB; reject oversized inputs before parsing."""

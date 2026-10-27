@@ -240,3 +240,11 @@ def test_all_new_result_parent_directories_are_private(tmp_path):
         os.umask(previous)
     for name in ("a", "a/b", "a/b/c"):
         assert (tmp_path / name).stat().st_mode & 0o777 == 0o700
+
+
+def test_yaml_rejects_duplicate_mapping_keys(tmp_path):
+    from mythopraxis.inputs import load_yaml
+    path = tmp_path / "case.yaml"
+    path.write_text("purpose: first\npurpose: second\n")
+    with pytest.raises(ValueError, match="duplicate"):
+        load_yaml(path)
